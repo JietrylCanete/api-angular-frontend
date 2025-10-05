@@ -18,6 +18,24 @@ nav a {
   color: #555;
   font-size: 0.9rem;
 }
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background-color: #28a745; /* green */
+  color: white;
+}
+
+.status-inactive {
+  background-color: #dc3545; /* red */
+  color: white;
+}
+
 
 /* --- Content Wrapper and Card --- */
 .content-wrapper {

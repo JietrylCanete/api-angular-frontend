@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EmployeeService } from '@app/_services/employee.service';
 import { DepartmentService } from '@app/_services/department.service';
+import { AccountService } from '@app/_services/account.service';
 import { Employee } from '@app/_models/employee';
 import { Department } from '@app/_models/department';
 import { Modal } from 'bootstrap';
@@ -16,14 +17,14 @@ export class EmployeeListComponent implements OnInit {
   departments: Department[] = [];
   loading = true;
 
-  // allow null initially
   selectedEmployee: Employee | null = null;
   newDepartmentId: number | null = null;
 
   constructor(
     private router: Router,
     private employeeService: EmployeeService,
-    private departmentService: DepartmentService
+    private departmentService: DepartmentService,
+    public accountService: AccountService
   ) {}
 
   ngOnInit(): void {
@@ -61,9 +62,8 @@ export class EmployeeListComponent implements OnInit {
   }
 
   viewWorkflows(emp: Employee) {
-  this.router.navigate(['/admin/employees', emp.EmployeeID, 'workflow']);
-}
-
+    this.router.navigate(['/admin/employees', emp.EmployeeID, 'workflow']);
+  }
 
   editEmployee(emp: Employee) {
     this.router.navigate(['/admin/employees/edit', emp.EmployeeID]);

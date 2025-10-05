@@ -1,4 +1,4 @@
-﻿import { Component } from '@angular/core';
+﻿﻿import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AccountService } from './_services';
@@ -16,11 +16,12 @@ export class AppComponent {
         private accountService: AccountService,
         private router: Router
     ) {
+        // This will now automatically get the account from localStorage
         this.accountService.account.subscribe(x => this.account = x);
     }
 
     logout() {
-        this.accountService.logout();       // clear token/session
-        this.router.navigate(['/account/login']);  // redirect to login
+        this.accountService.logout();
+        this.router.navigate(['/account/login']);
     }
 }

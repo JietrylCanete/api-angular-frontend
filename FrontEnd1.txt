@@ -1,19 +1,289 @@
+
+{
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "ng serve",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "preLaunchTask": "npm: start",
+      "url": "http://localhost:4200/"
+    },
+    {
+      "name": "ng test",
+      "type": "chrome",
+      "request": "launch",
+      "preLaunchTask": "npm: test",
+      "url": "http://localhost:9876/debug.html"
+    }
+  ]
+}
+
+
+================================================================================
+File: .vscode\tasks.json
+Size: 980 B
+================================================================================
+
+{
+  // For more information, visit: https://go.microsoft.com/fwlink/?LinkId=733558
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "start",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "bundle generation complete"
+          }
+        }
+      }
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "pattern": "$tsc",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": {
+            "regexp": "(.*?)"
+          },
+          "endsPattern": {
+            "regexp": "bundle generation complete"
+          }
+        }
+      }
+    }
+  ]
+}
+
+
+================================================================================
+File: angular.json
+Size: 3.34 kB
+================================================================================
+
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "angular-15-example": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/angular-15-example",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "less",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.less"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "angular-15-example:build:production"
+            },
+            "development": {
+              "browserTarget": "angular-15-example:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "angular-15-example:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "less",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "src/styles.less"
+            ],
+            "scripts": []
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "31e1b70c-bddd-4551-96b8-d3651a85ea22"
+  }
+}
+
+
+================================================================================
+File: karma.conf.js
+Size: 1.48 kB
+================================================================================
+
+// Karma configuration file, see link for more information
+// https://karma-runner.github.io/1.0/config/configuration-file.html
+
+module.exports = function (config) {
+  config.set({
+    basePath: '',
+    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-chrome-launcher'),
+      require('karma-jasmine-html-reporter'),
+      require('karma-coverage'),
+      require('@angular-devkit/build-angular/plugins/karma')
+    ],
+    client: {
+      jasmine: {
+        // you can add configuration options for Jasmine here
+        // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
+        // for example, you can disable the random execution with `random: false`
+        // or set a specific seed with `seed: 4321`
+      },
+      clearContext: false // leave Jasmine Spec Runner output visible in browser
+    },
+    jasmineHtmlReporter: {
+      suppressAll: true // removes the duplicated traces
+    },
+    coverageReporter: {
+      dir: require('path').join(__dirname, './coverage/angular-15-example'),
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ]
+    },
+    reporters: ['progress', 'kjhtml'],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ['Chrome'],
+    singleRun: false,
+    restartOnFileChange: true
+  });
+};
+
+
+================================================================================
+File: LICENSE
+Size: 1.1 kB
+================================================================================
+
+The MIT License (MIT)
+
+Copyright (c) 2023 Jason Watmore
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
 ================================================================================
 File: package.json
-Size: 1.43 kB
+Size: 1.48 kB
 ================================================================================
 
 {
     "name": "angular-15-example",
     "version": "0.0.0",
     "scripts": {
-        "ng": "ng",
-        "start": "ng serve --open",
-        "build": "ng build",
-        "watch": "ng build --watch --configuration development",
-        "test": "ng test",
-        "export:all": "folder2txt --output FrontEnd1.txt C:/Users/Y PC/JAVA/F-B angular/Trial-repo_F"
-    },
+  "ng": "ng",
+  "start": "ng serve --open",
+  "build": "ng build --configuration production",
+  "vercel-build": "ng build --configuration production",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test",
+  "export:all": "folder2txt --output FrontEnd1.txt C:/Users/Y PC/JAVA/F-B angular/Trial-repo_F"
+},
+
     "private": true,
     "dependencies": {
         "@angular/animations": "^15.0.0",
@@ -744,115 +1014,113 @@ export class AccountsModule { }
 
 ================================================================================
 File: src\app\admin\accounts\add-edit.component.html
-Size: 5.21 kB
+Size: 4.14 kB
 ================================================================================
 
-﻿<h1>{{title}}</h1>
-<form *ngIf="!loading" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="row">
-        <div class="mb-3 col-2">
-            <label class="form-label">Title</label>
-            <select formControlName="title" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
-                <option value=""></option>
-                <option value="Mr">Mr</option>
-                <option value="Mrs">Mrs</option>
-                <option value="Miss">Miss</option>
-                <option value="Ms">Ms</option>
-            </select>
-            <div *ngIf="submitted && f.title.errors" class="invalid-feedback">
-                <div *ngIf="f.title.errors.required">Title is required</div>
-            </div>
-        </div>
-        <div class="mb-3 col-5">
-            <label class="form-label">First Name</label>
-            <input type="text" formControlName="firstName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" />
-            <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
-                <div *ngIf="f.firstName.errors.required">First Name is required</div>
-            </div>
-        </div>
-        <div class="mb-3 col-5">
-            <label class="form-label">Last Name</label>
-            <input type="text" formControlName="lastName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }" />
-            <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
-                <div *ngIf="f.lastName.errors.required">Last Name is required</div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="mb-3 col-7">
-            <label class="form-label">Email</label>
-            <input type="text" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
-            <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
-                <div *ngIf="f.email.errors.required">Email is required</div>
-                <div *ngIf="f.email.errors.email">Email must be a valid email address</div>
-            </div>
-        </div>
-        <div class="mb-3 col-5">
-            <label class="form-label">Role</label>
-            <select formControlName="role" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.role.errors }">
-                <option value=""></option>
-                <option value="User">User</option>
-                <option value="Admin">Admin</option>
-            </select>
-            <div *ngIf="submitted && f.role.errors" class="invalid-feedback">
-                <div *ngIf="f.role.errors.required">Role is required</div>
-            </div>
-        </div>
-    </div>
+﻿<div class="card mt-3">
+  <div class="card-header">
+    <h5>{{ title }}</h5>
+  </div>
 
-    <!-- 🔥 Added: Status Dropdown -->
-    <div class="row">
-        <div class="mb-3 col-5">
-            <label class="form-label">Status</label>
-            <select formControlName="status" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
-                <option value="">Select status</option>
-                <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-            </select>
-            <div *ngIf="submitted && f.status.errors" class="invalid-feedback">
-                <div *ngIf="f.status.errors.required">Status is required</div>
-            </div>
-        </div>
-    </div>
-    <!-- 🔥 End Added -->
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-    <div *ngIf="id">
-        <h3 class="pt-3">Change Password</h3>
-        <p>Leave blank to keep the same password</p>
-    </div>
-    <div class="row">
-        <div class="mb-3 col">
-            <label class="form-label">Password</label>
-            <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
-            <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
-                <div *ngIf="f.password.errors.required">Password is required</div>
-                <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
-            </div>
+      <!-- Title -->
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" formControlName="title" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.title.errors }" />
+        <div *ngIf="submitted && f.title.errors" class="invalid-feedback">
+          Title is required
         </div>
-        <div class="mb-3 col">
-            <label class="form-label">Confirm Password</label>
-            <input type="password" formControlName="confirmPassword" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.confirmPassword.errors }" />
-            <div *ngIf="submitted && f.confirmPassword.errors" class="invalid-feedback">
-                <div *ngIf="f.confirmPassword.errors.required">Confirm Password is required</div>
-                <div *ngIf="f.confirmPassword.errors.mustMatch">Passwords must match</div>
-            </div>
+      </div>
+
+      <!-- First Name -->
+      <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <input type="text" formControlName="firstName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.firstName.errors }" />
+        <div *ngIf="submitted && f.firstName.errors" class="invalid-feedback">
+          First Name is required
         </div>
-    </div>
-    <div class="mb-3">
-        <button [disabled]="submitting" class="btn btn-primary">
-            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
-            Save
+      </div>
+
+      <!-- Last Name -->
+      <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <input type="text" formControlName="lastName" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.lastName.errors }" />
+        <div *ngIf="submitted && f.lastName.errors" class="invalid-feedback">
+          Last Name is required
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+        <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+          <div *ngIf="f.email.errors['required']">Email is required</div>
+          <div *ngIf="f.email.errors['email']">Email is invalid</div>
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select formControlName="role" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.role.errors }">
+          <option value="">Select Role</option>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
+        </select>
+        <div *ngIf="submitted && f.role.errors" class="invalid-feedback">
+          Role is required
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select formControlName="status" class="form-select" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
+          <option *ngFor="let s of statuses" [value]="s">{{ s | titlecase }}</option>
+        </select>
+        <div *ngIf="submitted && f.status.errors" class="invalid-feedback">
+          Status is required
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+          <div *ngIf="f.password.errors['required']">Password is required</div>
+          <div *ngIf="f.password.errors['minlength']">Password must be at least 6 characters</div>
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-3">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" formControlName="confirmPassword" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.confirmPassword.errors }" />
+        <div *ngIf="submitted && f.confirmPassword.errors" class="invalid-feedback">
+          Confirm Password must match Password
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="mt-3">
+        <button [disabled]="submitting" class="btn btn-primary me-2">
+          <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
+          Save
         </button>
-        <a routerLink="/admin/accounts" class="btn btn-link">Cancel</a>
-    </div>
-</form>
-<div *ngIf="loading" class="text-center m-5">
-    <span class="spinner-border spinner-border-lg align-center"></span>
+        <a routerLink="/admin/accounts" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
 </div>
 
 
 ================================================================================
 File: src\app\admin\accounts\add-edit.component.ts
-Size: 3.32 kB
+Size: 3.09 kB
 ================================================================================
 
 ﻿import { Component, OnInit } from '@angular/core';
@@ -860,10 +1128,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AccountService, AlertService } from '@app/_services';
+import { AccountService } from '@app/_services';
 import { MustMatch } from '@app/_helpers';
 
-@Component({ templateUrl: 'add-edit.component.html' },)
+@Component({ templateUrl: 'add-edit.component.html' })
 export class AddEditComponent implements OnInit {
     form!: FormGroup;
     id?: string;
@@ -879,8 +1147,7 @@ export class AddEditComponent implements OnInit {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private accountService: AccountService,
-        private alertService: AlertService
+        private accountService: AccountService
     ) { }
 
     ngOnInit() {
@@ -892,7 +1159,7 @@ export class AddEditComponent implements OnInit {
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             role: ['', Validators.required],
-            status: ['active', Validators.required],   // 🔥 Added: status field (default active)
+            status: ['active', Validators.required],   // default active
             // password only required in add mode
             password: ['', [Validators.minLength(6), ...(!this.id ? [Validators.required] : [])]],
             confirmPassword: ['']
@@ -914,42 +1181,37 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    // convenience getter for easy access to form fields
+    // convenience getter
     get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        // reset alerts on submit
-        this.alertService.clear();
-
-        // stop here if form is invalid
         if (this.form.invalid) {
             return;
         }
 
         this.submitting = true;
 
-        // create or update account based on id param
         let saveAccount;
         let message: string;
         if (this.id) {
             saveAccount = () => this.accountService.update(this.id!, this.form.value);
-            message = 'Account updated';
+            message = 'Account updated successfully!';
         } else {
             saveAccount = () => this.accountService.create(this.form.value);
-            message = 'Account created';
+            message = 'Account created successfully!';
         }
 
         saveAccount()
             .pipe(first())
             .subscribe({
                 next: () => {
-                    this.alertService.success(message, { keepAfterRouteChange: true });
+                    alert(message); // ✅ same as Employee/Department/Request
                     this.router.navigateByUrl('/admin/accounts');
                 },
                 error: error => {
-                    this.alertService.error(error);
+                    alert('Error: ' + (error.error?.message || 'Unknown error'));
                     this.submitting = false;
                 }
             });
@@ -959,21 +1221,19 @@ export class AddEditComponent implements OnInit {
 
 ================================================================================
 File: src\app\admin\accounts\list.component.css
-Size: 3.15 kB
+Size: 2.54 kB
 ================================================================================
 
 /* --- Global Page and Header Layout --- */
 .app-header {
-  /* Using your .top-nav-bar styles */
   display: flex;
-  justify-content: flex-end; /* Align links to the right as shown in prototypes */
+  justify-content: flex-end;
   align-items: center;
   padding: 10px 20px;
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
 }
 .app-header nav a {
-  /* Using your nav a styles */
   margin-left: 15px;
   text-decoration: none;
   color: #555;
@@ -985,13 +1245,11 @@ Size: 3.15 kB
 
 /* --- Content Wrapper and Card --- */
 .content-wrapper {
-  /* Using your content-wrapper styles */
   padding: 20px;
-  background-color: #f4f4f4; /* Light gray background */
+  background-color: #f4f4f4;
   min-height: 100vh;
 }
 .list-container {
-  /* Renamed to list-container for requests, but using your .employee-list-card styles */
   background-color: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -999,7 +1257,6 @@ Size: 3.15 kB
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 .list-container h2 {
-  /* Using your h2 styles */
   margin-top: 0;
   padding-bottom: 5px;
   font-size: 1.2rem;
@@ -1009,7 +1266,6 @@ Size: 3.15 kB
 
 /* --- Table Structure --- */
 .data-table {
-  /* Using your table styles */
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
@@ -1018,7 +1274,6 @@ Size: 3.15 kB
   border-bottom: 1px solid #e0e0e0;
 }
 .data-table th, .data-table td {
-  /* Using your th/td padding and font size */
   padding: 12px 15px;
   text-align: left;
   font-size: 0.9rem;
@@ -1028,40 +1283,44 @@ Size: 3.15 kB
   color: #555;
 }
 .data-table tbody tr {
-    transition: background-color 0.1s ease;
+  transition: background-color 0.1s ease;
 }
 .data-table tbody tr:hover {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 /* --- Status Badge Styling --- */
 .status-badge {
-  /* Using your status-badge styles */
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: bold;
   text-transform: uppercase;
 }
-.status-pending {
-  background-color: #ffc107; /* Yellow/Warning */
-  color: #333;
-}
-.status-approved {
-  background-color: #28a745; /* Green */
-  color: white;
-}
-.status-rejected {
-  background-color: #dc3545; /* Red */
+
+/* ✅ Green badge for ACTIVE */
+.status-active {
+  background-color: #28a745;
   color: white;
 }
 
-/* --- Action Buttons Styling (Edit/Delete) --- */
+/* ✅ Red badge for INACTIVE */
+.status-inactive {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* ⚠️ Yellow badge for PENDING */
+.status-pending {
+  background-color: #ffc107;
+  color: #333;
+}
+
+/* --- Action Buttons --- */
 .action-cell {
   white-space: nowrap;
 }
 .action-btn {
-  /* Combining your action-buttons-cell button styles */
   margin-right: 5px;
   padding: 6px 10px;
   border: none;
@@ -1071,24 +1330,19 @@ Size: 3.15 kB
   font-size: 0.8rem;
   font-weight: 500;
 }
-
 .action-btn:last-child {
   margin-right: 0;
 }
-
-/* Specific request button colors */
 .btn-edit { background-color: #007bff; }
 .btn-delete { background-color: #dc3545; }
 
-/* --- Add Request Button --- */
+/* --- Add Account Button --- */
 .add-button-row {
-  /* Using your .add-button-container styles */
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
 }
 .add-button {
-  /* Renamed to .add-button, but using your .btn-add-employee styles */
   background-color: #007bff;
   color: white;
   padding: 10px 15px;
@@ -1100,13 +1354,15 @@ Size: 3.15 kB
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+
 ================================================================================
 File: src\app\admin\accounts\list.component.html
-Size: 1.92 kB
+Size: 1.94 kB
 ================================================================================
 
-﻿<div class="app-header">
+﻿﻿<div class="app-header">
   <nav>
+    <!-- Accounts link is always visible here since this IS the accounts page -->
     <a routerLink="/admin/accounts">Accounts</a>
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
@@ -1115,47 +1371,48 @@ Size: 1.92 kB
 </div>
 
 <div class="content-wrapper">
-  
   <div class="list-container">
     <h2>ACCOUNTS</h2>
 
     <table class="data-table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th class="action-cell">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let account of accounts">
-                <td>{{account.title}}</td> 
-                <td>{{account.firstName}}</td>
-                <td>{{account.lastName}}</td>
-                <td>{{account.email}}</td>
-                <td>{{account.role}}</td>
-                <td>
-                  <span class="status-badge" [ngClass]="{
-                      'status-active': account.status === 'ACTIVE',
-                      'status-inactive': account.status !== 'ACTIVE'
-                  }">
-                    {{account.status | uppercase}}
-                  </span>
-                </td>
-                <td class="action-cell">
-                    <a routerLink="edit/{{account.id}}" class="btn action-btn btn-edit">Edit</a>
-                </td>
-            </tr>
-            <tr *ngIf="!accounts">
-                <td colspan="7" class="text-center">
-                    <span class="spinner-border spinner-border-lg align-center"></span>
-                </td>
-            </tr>
-        </tbody>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th class="action-cell">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let account of accounts">
+          <td>{{account.title}}</td>
+          <td>{{account.firstName}}</td>
+          <td>{{account.lastName}}</td>
+          <td>{{account.email}}</td>
+          <td>{{account.role}}</td>
+          <td>
+            <span class="status-badge"
+              [ngClass]="{
+                'status-active': account.status?.toLowerCase() === 'active',
+                'status-inactive': account.status?.toLowerCase() === 'inactive',
+                'status-pending': account.status?.toLowerCase() === 'pending'
+              }">
+              {{account.status | uppercase}}
+            </span>
+          </td>
+          <td class="action-cell">
+            <a routerLink="edit/{{account.id}}" class="btn action-btn btn-edit">Edit</a>
+          </td>
+        </tr>
+        <tr *ngIf="!accounts">
+          <td colspan="7" class="text-center">
+            <span class="spinner-border spinner-border-lg align-center"></span>
+          </td>
+        </tr>
+      </tbody>
     </table>
 
     <div class="add-button-row">
@@ -1166,23 +1423,28 @@ Size: 1.92 kB
 
 ================================================================================
 File: src\app\admin\accounts\list.component.ts
-Size: 1.03 kB
+Size: 1.07 kB
 ================================================================================
 
-﻿import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+﻿﻿import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { first } from 'rxjs/operators';
 
 import { AccountService } from '@app/_services';
+import { Role } from '@app/_models';
 
 @Component({ 
     templateUrl: 'list.component.html', 
-    styleUrls: ['./list.component.css'], // <-- Corrected syntax for styleUrls
-    encapsulation: ViewEncapsulation.None // <-- ADDED to ensure header/background styles work
+    styleUrls: ['./list.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class ListComponent implements OnInit {
     accounts?: any[];
+    Role = Role;
 
-    constructor(private accountService: AccountService) { }
+    constructor(
+        private accountService: AccountService,
+        public accountServicePublic: AccountService
+    ) { }
 
     ngOnInit() {
         this.accountService.getAll()
@@ -1203,42 +1465,43 @@ export class ListComponent implements OnInit {
 
 ================================================================================
 File: src\app\admin\admin-routing.module.ts
-Size: 1.26 kB
+Size: 1.33 kB
 ================================================================================
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-//import { SubNavComponent } from './subnav.component';
-//import { LayoutComponent } from './layout.component';
 import { OverviewComponent } from './overview.component';
+import { Role } from '@app/_models';
 
 const routes: Routes = [
-  //{ path: '', component: SubNavComponent, outlet: 'subnav' },
   {
     path: '',
-    //component: LayoutComponent,
     children: [
       { path: '', component: OverviewComponent },
       {
         path: 'accounts',
         loadChildren: () =>
           import('./accounts/accounts.module').then(m => m.AccountsModule),
+        data: { roles: [Role.Admin] } // ONLY ADMIN
       },
       {
         path: 'employees',
         loadChildren: () =>
           import('./employees/employees.module').then(m => m.EmployeesModule),
+        data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
       },
       {
         path: 'departments',
         loadChildren: () =>
           import('./departments/departments.module').then(m => m.DepartmentsModule),
+        data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
       },
       {
         path: 'requests',
         loadChildren: () =>
           import('./requests/requests.module').then(m => m.RequestsModule),
+        data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
       }
     ],
   },
@@ -1250,10 +1513,9 @@ const routes: Routes = [
 })
 export class AdminRoutingModule {}
 
-
 ================================================================================
 File: src\app\admin\admin.module.ts
-Size: 647 B
+Size: 477 B
 ================================================================================
 
 import { NgModule } from '@angular/core';
@@ -1261,8 +1523,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { AdminRoutingModule } from './admin-routing.module';
-//import { SubNavComponent } from './subnav.component';
-//import { LayoutComponent } from './layout.component';
 import { OverviewComponent } from './overview.component';
 
 @NgModule({
@@ -1272,8 +1532,6 @@ import { OverviewComponent } from './overview.component';
         AdminRoutingModule
     ],
     declarations: [
-        //SubNavComponent,
-        //LayoutComponent,
         OverviewComponent
     ]
 })
@@ -1524,13 +1782,15 @@ tbody tr:hover {
 
 ================================================================================
 File: src\app\admin\departments\department-list.component.html
-Size: 1.57 kB
+Size: 1.68 kB
 ================================================================================
 
 <div class="top-nav-bar">
   <span class="app-title"></span>
   <nav>
-    <a routerLink="/admin/accounts">Accounts</a>
+    <!-- Show Accounts link only for Admin -->
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" 
+       routerLink="/admin/accounts">Accounts</a>
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
@@ -1578,15 +1838,15 @@ Size: 1.57 kB
   </div>
 </div>
 
-
 ================================================================================
 File: src\app\admin\departments\department-list.component.ts
-Size: 1.54 kB
+Size: 1.65 kB
 ================================================================================
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DepartmentService } from '@app/_services/department.service';
+import { AccountService } from '@app/_services/account.service';
 import { Department } from '@app/_models';
 
 @Component({
@@ -1600,7 +1860,8 @@ export class DepartmentListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private departmentService: DepartmentService
+    private departmentService: DepartmentService,
+    public accountService: AccountService
   ) {}
 
   ngOnInit(): void {
@@ -1637,7 +1898,6 @@ export class DepartmentListComponent implements OnInit {
     });
   }
 }
-
 
 ================================================================================
 File: src\app\admin\departments\departments-routing.module.ts
@@ -1857,7 +2117,7 @@ export class EmployeeAddEditComponent implements OnInit {
 
 ================================================================================
 File: src\app\admin\employees\employee-list.component.css
-Size: 2.68 kB
+Size: 2.99 kB
 ================================================================================
 
 /* --- Global Page and Header Layout --- */
@@ -1880,6 +2140,24 @@ nav a {
   color: #555;
   font-size: 0.9rem;
 }
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background-color: #28a745; /* green */
+  color: white;
+}
+
+.status-inactive {
+  background-color: #dc3545; /* red */
+  color: white;
+}
+
 
 /* --- Content Wrapper and Card --- */
 .content-wrapper {
@@ -1987,13 +2265,15 @@ tbody tr:hover {
 
 ================================================================================
 File: src\app\admin\employees\employee-list.component.html
-Size: 3.06 kB
+Size: 3.3 kB
 ================================================================================
 
 <div class="top-nav-bar">
   <span class="app-title"></span>
   <nav>
-    <a routerLink="/admin/accounts">Accounts</a>
+    <!-- Show Accounts link only for Admin -->
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" 
+       routerLink="/admin/accounts">Accounts</a>
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
@@ -2027,10 +2307,12 @@ Size: 3.06 kB
             <td>{{ employee.Department?.departmentName }}</td>
             <td>{{ formatDate(employee.hireDate) }}</td>
             <td>
-              <span
-                class="status-badge"
-                [class.status-active]="employee.status === 'active'">
-                {{ employee.status }}
+              <span class="status-badge"
+                [ngClass]="{
+                  'status-active': employee.status!.toLowerCase() === 'active',
+                  'status-inactive': employee.status!.toLowerCase() === 'inactive'
+                }">
+                {{ employee.status | uppercase }}
               </span>
             </td>
             <td>
@@ -2072,16 +2354,16 @@ Size: 3.06 kB
   </div>
 </div>
 
-
 ================================================================================
 File: src\app\admin\employees\employee-list.component.ts
-Size: 3.15 kB
+Size: 3.19 kB
 ================================================================================
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { EmployeeService } from '@app/_services/employee.service';
 import { DepartmentService } from '@app/_services/department.service';
+import { AccountService } from '@app/_services/account.service';
 import { Employee } from '@app/_models/employee';
 import { Department } from '@app/_models/department';
 import { Modal } from 'bootstrap';
@@ -2102,7 +2384,8 @@ export class EmployeeListComponent implements OnInit {
   constructor(
     private router: Router,
     private employeeService: EmployeeService,
-    private departmentService: DepartmentService
+    private departmentService: DepartmentService,
+    public accountService: AccountService
   ) {}
 
   ngOnInit(): void {
@@ -2126,7 +2409,7 @@ export class EmployeeListComponent implements OnInit {
 
   loadDepartments(): void {
     this.departmentService.getAll().subscribe({
-      next: (data: Department[]) => (this.departments = data),
+      next: (data: Department[]) => this.departments = data,
       error: (err: any) => console.error('Failed to load departments', err)
     });
   }
@@ -2136,12 +2419,9 @@ export class EmployeeListComponent implements OnInit {
   }
 
   viewRequests(emp: Employee) {
-    this.router.navigate(['/admin/requests'], {
-      queryParams: { employeeId: emp.EmployeeID }
-    });
+    this.router.navigate(['/admin/requests'], { queryParams: { employeeId: emp.EmployeeID } });
   }
 
-  // 🔹 FIXED: navigate to workflow component
   viewWorkflows(emp: Employee) {
     this.router.navigate(['/admin/employees', emp.EmployeeID, 'workflow']);
   }
@@ -2184,52 +2464,46 @@ export class EmployeeListComponent implements OnInit {
           this.closeModal();
           this.loadEmployees();
         },
-        error: (err) => console.error('Transfer failed', err)
+        error: err => console.error('Transfer failed', err)
       });
   }
 }
 
-
 ================================================================================
 File: src\app\admin\employees\employee-workflow.component.html
-Size: 1.28 kB
+Size: 997 B
 ================================================================================
 
-<!-- src/app/admin/employees/employee-workflow.component.html -->
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      <h3 class="mt-3">Employee Workflow</h3>
+<div class="content-wrapper">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3>Employee Workflow: {{ employeeId }}</h3>
+      <button class="btn btn-secondary btn-sm" (click)="backToEmployees()">← Back</button>
+    </div>
 
-      <div *ngIf="loading" class="text-center my-4">
-        <span class="spinner-border" role="status" aria-hidden="true"></span>
-      </div>
+    <div *ngIf="loading" class="text-center p-3">
+      Loading workflow...
+    </div>
 
-      <div *ngIf="errorMessage" class="alert alert-danger">
-        {{ errorMessage }}
-      </div>
+    <table *ngIf="!loading && workflows.length > 0" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Description</th>
+          <th>Date / Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let wf of workflows">
+          <td>{{ wf.action }}</td>
+          <td>{{ wf.description }}</td>
+          <td>{{ wf.createdAt | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
 
-      <div *ngIf="!loading && workflows.length === 0" class="alert alert-info">
-        No workflow records for this employee.
-      </div>
-
-      <ul *ngIf="!loading && workflows.length > 0" class="list-group">
-        <li *ngFor="let w of workflows" class="list-group-item">
-          <div class="d-flex justify-content-between">
-            <div>
-              <strong>{{ w.action }}</strong>
-              <div *ngIf="w.description" class="small text-muted mt-1">{{ w.description }}</div>
-            </div>
-            <div class="text-end text-muted small">
-              {{ w.createdAt | date:'medium' }}
-            </div>
-          </div>
-        </li>
-      </ul>
-
-      <div class="mt-3">
-        <a class="btn btn-link" routerLink="../">Back to employees</a>
-      </div>
+    <div *ngIf="!loading && workflows.length === 0" class="p-3 text-center">
+      No workflow records found.
     </div>
   </div>
 </div>
@@ -2237,77 +2511,74 @@ Size: 1.28 kB
 
 ================================================================================
 File: src\app\admin\employees\employee-workflow.component.ts
-Size: 1.45 kB
+Size: 1.2 kB
 ================================================================================
 
-// src/app/admin/employees/employee-workflow.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { EmployeeService } from '@app/_services';
+import { ActivatedRoute, Router } from '@angular/router';
+import { EmployeeService } from '@app/_services/employee.service';
 
 @Component({
-  templateUrl: 'employee-workflow.component.html'
+  selector: 'app-employee-workflow',
+  templateUrl: './employee-workflow.component.html',
+  //styleUrls: ['./employee-workflow.component.css']
 })
 export class EmployeeWorkflowComponent implements OnInit {
-  workflows: Array<{ action: string; description?: string; createdAt?: string }> = [];
   employeeId!: string;
-
-  loading = false;
-  errorMessage = '';
+  workflows: any[] = [];
+  loading = true;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private employeeService: EmployeeService
   ) {}
 
-  ngOnInit() {
-    this.employeeId = this.route.snapshot.paramMap.get('id') || '';
-    if (!this.employeeId) {
-      this.errorMessage = 'No employee specified';
-      return;
-    }
-    this.loadWorkflows();
+  ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.employeeId = params['id'];
+      this.loadWorkflow();
+    });
   }
 
-  loadWorkflows() {
+  loadWorkflow(): void {
     this.loading = true;
     this.employeeService.getWorkflow(this.employeeId).subscribe({
       next: (data) => {
-        // normalize: ensure createdAt exists for display
-        this.workflows = (data || []).map((w: any) => ({
-          action: w.action,
-          description: w.description,
-          createdAt: w.createdAt || w.created || w.date
-        }));
+        this.workflows = data;
         this.loading = false;
       },
       error: (err) => {
+        console.error('Failed to load workflow', err);
         this.loading = false;
-        this.errorMessage = err?.error?.message || err?.message || 'Failed to load workflow';
       }
     });
+  }
+
+  backToEmployees(): void {
+    this.router.navigate(['/admin/employees']);
   }
 }
 
 
 ================================================================================
 File: src\app\admin\employees\employees-routing.module.ts
-Size: 798 B
+Size: 789 B
 ================================================================================
 
-// src/app/admin/employees/employees-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { EmployeeListComponent } from './employee-list.component';
 import { EmployeeAddEditComponent } from './employee-add-edit.component';
+import { EmployeeListComponent } from './employee-list.component';
 import { EmployeeWorkflowComponent } from './employee-workflow.component';
 
 const routes: Routes = [
   { path: '', component: EmployeeListComponent },
   { path: 'add', component: EmployeeAddEditComponent },
   { path: 'edit/:id', component: EmployeeAddEditComponent },
-  { path: ':id/workflow', component: EmployeeWorkflowComponent } // <-- workflow route
+  { path: 'workflows/:id', component: EmployeeWorkflowComponent },
+  { path: ':id/workflow', component: EmployeeWorkflowComponent },
 ];
 
 @NgModule({
@@ -2319,23 +2590,21 @@ export class EmployeesRoutingModule {}
 
 ================================================================================
 File: src\app\admin\employees\employees.module.ts
-Size: 731 B
+Size: 724 B
 ================================================================================
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-
 import { EmployeesRoutingModule } from './employees-routing.module';
 import { EmployeeListComponent } from './employee-list.component';
 import { EmployeeAddEditComponent } from './employee-add-edit.component';
 import { EmployeeWorkflowComponent } from './employee-workflow.component';
-
 @NgModule({
   declarations: [
     EmployeeListComponent,
     EmployeeAddEditComponent,
-    EmployeeWorkflowComponent   
+    EmployeeWorkflowComponent
   ],
   imports: [
     CommonModule,
@@ -2349,30 +2618,33 @@ export class EmployeesModule {}
 
 ================================================================================
 File: src\app\admin\overview.component.html
-Size: 218 B
+Size: 219 B
 ================================================================================
 
 ﻿<div class="p-4">
     <div class="container">
         <h1>Admin</h1>
         <p>This section can only be accessed by administrators.</p>
-        <p><a routerLink="accounts">Admin Zone</a></p>
+        <p><a routerLink="employees">Admin Zone</a></p>
     </div>
 </div>
 
 ================================================================================
 File: src\app\admin\overview.component.ts
-Size: 139 B
+Size: 253 B
 ================================================================================
 
-﻿import { Component } from '@angular/core';
+﻿﻿import { Component } from '@angular/core';
+import { AccountService } from '@app/_services';
 
 @Component({ templateUrl: 'overview.component.html' })
-export class OverviewComponent { }
+export class OverviewComponent {
+    constructor(public accountService: AccountService) { }
+}
 
 ================================================================================
 File: src\app\admin\requests\request-add-edit.component.html
-Size: 2.72 kB
+Size: 2.95 kB
 ================================================================================
 
 <div class="card mt-3">
@@ -2382,18 +2654,29 @@ Size: 2.72 kB
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
 
-      <!-- Employee Dropdown -->
+      <!-- Employee Email (readonly in edit mode, dropdown in add mode) -->
       <div class="mb-3">
         <label for="employee">Employee</label>
-        <select formControlName="employeeId" id="employee" class="form-select">
+
+        <!-- Add Mode -->
+        <select *ngIf="isAddMode" formControlName="employeeId" id="employee" class="form-select">
           <option value="">Select Employee</option>
-          <option *ngFor="let emp of employees" [value]="emp.EmployeeID">
-            {{ emp.EmployeeID }} - {{ emp.Account?.email }}
+          <option *ngFor="let emp of employees" [value]="emp.Account?.id">
+            {{ emp.Account?.email }}
           </option>
         </select>
+
+        <!-- Edit Mode -->
+        <input 
+          *ngIf="!isAddMode"
+          type="text"
+          class="form-control"
+          [value]="employeeEmail"
+          readonly
+        />
       </div>
 
-      <!-- Type Dropdown -->
+      <!-- Type -->
       <div class="mb-3">
         <label for="type">Type</label>
         <select formControlName="type" id="type" class="form-select">
@@ -2404,7 +2687,7 @@ Size: 2.72 kB
         </select>
       </div>
 
-      <!-- Status Dropdown (Edit Mode Only) -->
+      <!-- Status (only edit mode) -->
       <div class="mb-3" *ngIf="!isAddMode">
         <label for="status">Status</label>
         <select formControlName="status" id="status" class="form-select">
@@ -2414,7 +2697,7 @@ Size: 2.72 kB
         </select>
       </div>
 
-      <!-- Items FormArray -->
+      <!-- Items -->
       <div formArrayName="items" class="mb-3">
         <label>Items</label>
         <div *ngFor="let item of itemsFormArray.controls; let i = index" [formGroupName]="i" class="row g-2 mb-2">
@@ -2435,7 +2718,7 @@ Size: 2.72 kB
       <!-- Add Item Button -->
       <button type="button" class="btn btn-secondary mt-2" (click)="addItem()">Add Item</button>
 
-      <!-- Submit Buttons -->
+      <!-- Submit -->
       <div class="mt-3">
         <button type="submit" class="btn btn-primary me-2" [disabled]="loading">
           {{ isAddMode ? 'Save' : 'Update' }}
@@ -2450,7 +2733,7 @@ Size: 2.72 kB
 
 ================================================================================
 File: src\app\admin\requests\request-add-edit.component.ts
-Size: 4.38 kB
+Size: 4.31 kB
 ================================================================================
 
 import { Component, OnInit } from '@angular/core';
@@ -2458,11 +2741,11 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RequestService } from '@app/_services/request.service';
 import { EmployeeService } from '@app/_services/employee.service';
-import { Request, RequestItem } from '@app/_models/request';
+import { Request } from '@app/_models/request';
 
 interface Employee {
   EmployeeID: string;
-  Account?: { id: number; email: string; };
+  Account?: { id: number; email: string };
 }
 
 @Component({
@@ -2477,6 +2760,9 @@ export class RequestAddEditComponent implements OnInit {
   employees: Employee[] = [];
   id!: number;
 
+  // ✅ store email separately for readonly display
+  employeeEmail: string = '';
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -2489,7 +2775,6 @@ export class RequestAddEditComponent implements OnInit {
     this.id = +this.route.snapshot.params['id'];
     this.isAddMode = !this.id;
 
-    // Initialize the form
     this.form = this.fb.group({
       employeeId: ['', Validators.required],
       type: ['', Validators.required],
@@ -2497,16 +2782,13 @@ export class RequestAddEditComponent implements OnInit {
       status: [this.isAddMode ? 'pending' : '', Validators.required]
     });
 
-    // Load employees first
     this.employeeService.getAll().subscribe({
       next: (res: Employee[]) => {
         this.employees = res;
 
         if (this.isAddMode) {
-          // Add one empty item row automatically for new request
           this.addItem();
         } else {
-          // If editing, load the request data
           this.loadRequest();
         }
       },
@@ -2519,10 +2801,12 @@ export class RequestAddEditComponent implements OnInit {
   }
 
   addItem(name: string = '', quantity: number = 1): void {
-    this.itemsFormArray.push(this.fb.group({
-      name: [name, Validators.required],
-      quantity: [quantity, [Validators.required, Validators.min(1)]]
-    }));
+    this.itemsFormArray.push(
+      this.fb.group({
+        name: [name, Validators.required],
+        quantity: [quantity, [Validators.required, Validators.min(1)]]
+      })
+    );
   }
 
   removeItem(index: number): void {
@@ -2532,21 +2816,32 @@ export class RequestAddEditComponent implements OnInit {
   }
 
   loadRequest(): void {
-    this.requestService.getById(this.id).subscribe((req: Request) => {
-      // Patch employee, type, status AFTER employees are loaded
+    this.requestService.getById(this.id).subscribe((req: any) => {
+      console.log('Loaded request:', req);
+
       this.form.patchValue({
-        employeeId: req.Employee?.EmployeeID || '',
+        employeeId: req.accountId,
         type: req.type,
         status: req.status
       });
 
-      // Populate items
-      if (req.items && req.items.length > 0) {
-        req.items.forEach((item: RequestItem) => {
-          this.addItem(item.name, item.quantity);
-        });
+      // ✅ capture the Account email for readonly display
+      this.employeeEmail = req.Account?.email || '';
+
+      this.itemsFormArray.clear();
+      if (req.items) {
+        const itemNames =
+          typeof req.items === 'string'
+            ? req.items.split(',').map((n: string) => n.trim())
+            : [];
+        if (itemNames.length > 0) {
+          itemNames.forEach((name: string) => {
+            this.addItem(name, req.quantity || 1);
+          });
+        } else {
+          this.addItem();
+        }
       } else {
-        // At least one item row
         this.addItem();
       }
     });
@@ -2554,23 +2849,12 @@ export class RequestAddEditComponent implements OnInit {
 
   onSubmit(): void {
     this.submitted = true;
-
     if (this.form.invalid) {
       alert('Please fill all required fields!');
       return;
     }
 
     this.loading = true;
-
-    const selectedEmployee = this.employees.find(
-      e => e.EmployeeID === this.form.value.employeeId
-    );
-
-    if (!selectedEmployee) {
-      alert('Please select a valid employee!');
-      this.loading = false;
-      return;
-    }
 
     const itemsArray = this.itemsFormArray.value;
     const itemsString = itemsArray.map((i: any) => i.name).join(', ');
@@ -2580,7 +2864,7 @@ export class RequestAddEditComponent implements OnInit {
     );
 
     const payload = {
-      accountId: Number(selectedEmployee.Account?.id),
+      accountId: this.form.value.employeeId,
       type: this.form.value.type,
       items: itemsString,
       quantity: totalQuantity,
@@ -2608,7 +2892,7 @@ export class RequestAddEditComponent implements OnInit {
 
 ================================================================================
 File: src\app\admin\requests\request-list.component.css
-Size: 2.81 kB
+Size: 3.2 kB
 ================================================================================
 
 /* --- Global Page and Header Layout --- */
@@ -2628,6 +2912,27 @@ Size: 2.81 kB
 }
 .app-header nav a:hover {
   color: #007bff;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #ffc107; /* yellow */
+  color: #333;
+}
+.status-approved {
+  background-color: #28a745; /* green */
+  color: white;
+}
+.status-rejected {
+  background-color: #dc3545; /* red */
+  color: white;
 }
 
 /* --- Content Wrapper and Card --- */
@@ -2753,12 +3058,13 @@ Size: 2.81 kB
 
 ================================================================================
 File: src\app\admin\requests\request-list.component.html
-Size: 1.92 kB
+Size: 2.07 kB
 ================================================================================
 
 <div class="app-header">
   <nav>
-    <a routerLink="/admin/accounts">Accounts</a>
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" 
+       routerLink="/admin/accounts">Accounts</a>
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
@@ -2790,12 +3096,13 @@ Size: 1.92 kB
           <td>{{ req.items }}</td>
           <td>{{ req.quantity }}</td>
           <td>
-            <span class="status-badge" [ngClass]="{
-              'status-pending': req.status === 'pending',
-              'status-approved': req.status === 'approved',
-              'status-rejected': req.status === 'rejected'
-            }">
-              {{ req.status }}
+            <span class="status-badge" 
+              [ngClass]="{
+                'status-pending': req.status?.toLowerCase() === 'pending',
+                'status-approved': req.status?.toLowerCase() === 'approved',
+                'status-rejected': req.status?.toLowerCase() === 'rejected'
+              }">
+              {{ req.status | uppercase }}
             </span>
           </td>
           <td>{{ req.created | date:'M/d/yyyy, h:mm a' }}</td>
@@ -2816,24 +3123,29 @@ Size: 1.92 kB
   </div>
 </div>
 
+
 ================================================================================
 File: src\app\admin\requests\request-list.component.ts
-Size: 1.21 kB
+Size: 1.33 kB
 ================================================================================
 
 import { Component, OnInit } from '@angular/core';
 import { RequestService } from '@app/_services/request.service';
+import { AccountService } from '@app/_services/account.service';
 
 @Component({
   selector: 'app-request-list',
   templateUrl: './request-list.component.html',
-    styleUrls: ['./request-list.component.css']
+  styleUrls: ['./request-list.component.css']
 })  
 export class RequestListComponent implements OnInit {
   requests: any[] = [];
   loading = false;
 
-  constructor(private requestService: RequestService) {}
+  constructor(
+    private requestService: RequestService,
+    public accountService: AccountService
+  ) {}
 
   ngOnInit(): void {
     this.loadRequests();
@@ -2864,7 +3176,6 @@ export class RequestListComponent implements OnInit {
     });
   }
 }
-
 
 ================================================================================
 File: src\app\admin\requests\requests-routing.module.ts
@@ -2918,26 +3229,23 @@ export class RequestsModule {}
 
 ================================================================================
 File: src\app\app-routing.module.ts
-Size: 1.06 kB
+Size: 884 B
 ================================================================================
 
-//app-routing.module.ts
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { HomeComponent } from './home';
-import { AuthGuard } from './_helpers';
-import { Role } from './_models';
 
 const accountModule = () => import('./account/account.module').then(x => x.AccountModule);
 const adminModule = () => import('./admin/admin.module').then(x => x.AdminModule);
 const profileModule = () => import('./profile/profile.module').then(x => x.ProfileModule);
 
 const routes: Routes = [
-    { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+    { path: '', component: HomeComponent },
     { path: 'account', loadChildren: accountModule },
-    { path: 'profile', loadChildren: profileModule, canActivate: [AuthGuard] },
-    { path: 'admin', loadChildren: adminModule, canActivate: [AuthGuard], data: { roles: [Role.Admin] } },
+    { path: 'profile', loadChildren: profileModule },
+    { path: 'admin', loadChildren: adminModule }, // REMOVED AuthGuard temporarily
 
     // otherwise redirect to home
     { path: '**', redirectTo: '' }
@@ -2949,19 +3257,21 @@ const routes: Routes = [
 })
 export class AppRoutingModule { }
 
-
 ================================================================================
 File: src\app\app.component.html
-Size: 915 B
+Size: 944 B
 ================================================================================
 
-﻿<div class="app-container" [ngClass]="{ 'bg-light': account }">
+﻿﻿<div class="app-container" [ngClass]="{ 'bg-light': account }">
     <!-- main nav -->
     <nav class="navbar navbar-expand navbar-dark bg-dark px-3" *ngIf="account">
         <div class="navbar-nav">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item nav-link">Home</a>
             <a routerLink="/profile" routerLinkActive="active" class="nav-item nav-link">Profile</a>
-            <a *ngIf="account.role === Role.Admin" routerLink="/admin" routerLinkActive="active" class="nav-item nav-link">Admin</a>
+            
+            <!-- FORCE SHOW ADMIN LINK - NO CONDITIONS -->
+            <a routerLink="/admin" class="nav-item nav-link">Admin</a>
+            
             <button (click)="logout()" class="btn btn-link nav-item nav-link">Logout</button>
         </div>
     </nav>
@@ -2978,7 +3288,7 @@ Size: 915 B
 
 ================================================================================
 File: src\app\app.component.ts
-Size: 707 B
+Size: 654 B
 ================================================================================
 
 ﻿import { Component } from '@angular/core';
@@ -3003,11 +3313,10 @@ export class AppComponent {
     }
 
     logout() {
-        this.accountService.logout();       // clear token/session
-        this.router.navigate(['/account/login']);  // redirect to login
+        this.accountService.logout();
+        this.router.navigate(['/account/login']);
     }
 }
-
 
 ================================================================================
 File: src\app\app.module.ts
@@ -3067,18 +3376,19 @@ Size: 171 B
 
 ================================================================================
 File: src\app\home\home.component.ts
-Size: 296 B
+Size: 313 B
 ================================================================================
 
 ﻿import { Component } from '@angular/core';
-
 import { AccountService } from '@app/_services';
 
 @Component({ templateUrl: 'home.component.html' })
 export class HomeComponent {
-    account = this.accountService.accountValue;
+  constructor(private accountService: AccountService) {}
 
-    constructor(private accountService: AccountService) { }
+  get account() {
+    return this.accountService.accountValue; 
+  }
 }
 
 ================================================================================
@@ -3090,7 +3400,7 @@ Size: 36 B
 
 ================================================================================
 File: src\app\profile\details.component.html
-Size: 243 B
+Size: 244 B
 ================================================================================
 
 ﻿<h1>My Profile</h1>
@@ -3098,22 +3408,23 @@ Size: 243 B
     <strong>Name: </strong> {{account.title}} {{account.firstName}} {{account.lastName}}<br />
     <strong>Email: </strong> {{account.email}}
 </p>
-<p><a routerLink="update">Update Profile</a></p>
+<p><a routerLink="update">Update Profile</a></p>`
 
 ================================================================================
 File: src\app\profile\details.component.ts
-Size: 302 B
+Size: 319 B
 ================================================================================
 
 ﻿import { Component } from '@angular/core';
-
 import { AccountService } from '@app/_services';
 
 @Component({ templateUrl: 'details.component.html' })
 export class DetailsComponent {
-    account = this.accountService.accountValue;
+  constructor(private accountService: AccountService) {}
 
-    constructor(private accountService: AccountService) { }
+  get account() {
+    return this.accountService.accountValue; 
+  }
 }
 
 ================================================================================
@@ -3272,86 +3583,131 @@ Size: 3.94 kB
 
 ================================================================================
 File: src\app\profile\update.component.ts
-Size: 2.65 kB
+Size: 2.68 kB
 ================================================================================
 
 ﻿import { Component, OnInit } from '@angular/core';
+
 import { Router, ActivatedRoute } from '@angular/router';
+
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { first } from 'rxjs/operators';
 
 import { AccountService, AlertService } from '@app/_services';
+
 import { MustMatch } from '@app/_helpers';
 
 @Component({ templateUrl: 'update.component.html' })
 export class UpdateComponent implements OnInit {
-    account = this.accountService.accountValue!;
-    form!: FormGroup;
-    submitting = false;
-    submitted = false;
-    deleting = false;
+  account: any; // ✅ declare without initializing early
 
-    constructor(
-        private formBuilder: FormBuilder,
-        private route: ActivatedRoute,
-        private router: Router,
-        private accountService: AccountService,
-        private alertService: AlertService
-    ) { }
+  form!: FormGroup;
 
-    ngOnInit() {
-        this.form = this.formBuilder.group({
-            title: [this.account.title, Validators.required],
-            firstName: [this.account.firstName, Validators.required],
-            lastName: [this.account.lastName, Validators.required],
-            email: [this.account.email, [Validators.required, Validators.email]],
-            password: ['', [Validators.minLength(6)]],
-            confirmPassword: ['']
-        }, {
-            validator: MustMatch('password', 'confirmPassword')
+  submitting = false;
+
+  submitted = false;
+
+  deleting = false;
+
+  constructor(
+    private formBuilder: FormBuilder,
+
+    private route: ActivatedRoute,
+
+    private router: Router,
+
+    private accountService: AccountService,
+
+    private alertService: AlertService
+  ) {}
+
+  ngOnInit() {
+    // ✅ assign account only after accountService is injected
+
+    this.account = this.accountService.accountValue!;
+
+    this.form = this.formBuilder.group(
+      {
+        title: [this.account.title, Validators.required],
+
+        firstName: [this.account.firstName, Validators.required],
+
+        lastName: [this.account.lastName, Validators.required],
+
+        email: [this.account.email, [Validators.required, Validators.email]],
+
+        password: ['', [Validators.minLength(6)]],
+
+        confirmPassword: [''],
+      },
+      {
+        validator: MustMatch('password', 'confirmPassword'),
+      }
+    );
+  }
+
+  // convenience getter for easy access to form fields
+
+  get f() {
+    return this.form.controls;
+  }
+
+  onSubmit() {
+    this.submitted = true;
+
+    // reset alerts on submit
+
+    this.alertService.clear();
+
+    // stop here if form is invalid
+
+    if (this.form.invalid) {
+      return;
+    }
+
+    this.submitting = true;
+
+    this.accountService
+      .update(this.account.id!, this.form.value)
+
+      .pipe(first())
+
+      .subscribe({
+        next: () => {
+          this.alertService.success('Update successful', {
+            keepAfterRouteChange: true,
+          });
+
+          this.router.navigate(['../'], { relativeTo: this.route });
+        },
+
+        error: (error) => {
+          this.alertService.error(error);
+
+          this.submitting = false;
+        },
+      });
+  }
+
+  onDelete() {
+    if (confirm('Are you sure?')) {
+      this.deleting = true;
+
+      this.accountService
+        .delete(this.account.id!)
+
+        .pipe(first())
+
+        .subscribe(() => {
+          this.alertService.success('Account deleted successfully', {
+            keepAfterRouteChange: true,
+          });
         });
     }
-
-    // convenience getter for easy access to form fields
-    get f() { return this.form.controls; }
-
-    onSubmit() {
-        this.submitted = true;
-
-        // reset alerts on submit
-        this.alertService.clear();
-
-        // stop here if form is invalid
-        if (this.form.invalid) {
-            return;
-        }
-
-        this.submitting = true;
-        this.accountService.update(this.account.id!, this.form.value)
-            .pipe(first())
-            .subscribe({
-                next: () => {
-                    this.alertService.success('Update successful', { keepAfterRouteChange: true });
-                    this.router.navigate(['../'], { relativeTo: this.route });
-                },
-                error: error => {
-                    this.alertService.error(error);
-                    this.submitting = false;
-                }
-            });
-    }
-
-    onDelete() {
-        if (confirm('Are you sure?')) {
-            this.deleting = true;
-            this.accountService.delete(this.account.id!)
-                .pipe(first())
-                .subscribe(() => {
-                    this.alertService.success('Account deleted successfully', { keepAfterRouteChange: true });
-                });
-        }
-    }
+  }
 }
+
 
 ================================================================================
 File: src\app\_components\alert.component.html
@@ -4377,7 +4733,7 @@ export class DepartmentService {
 
 ================================================================================
 File: src\app\_services\employee.service.ts
-Size: 1.43 kB
+Size: 1.46 kB
 ================================================================================
 
 import { Injectable } from '@angular/core';
@@ -4419,11 +4775,11 @@ export class EmployeeService {
   transfer(EmployeeID: string, toDeptId: number): Observable<any> {
     return this.http.post(`${baseUrl}/${EmployeeID}/transfer`, { toDeptId });
   }
-  
+
+  // ---------- WORKFLOW ----------
   getWorkflow(employeeId: string | number) {
     return this.http.get<any[]>(`${environment.apiUrl}/employee-workflows/${employeeId}`);
 }
-
 }
 
 
@@ -4437,13 +4793,6 @@ export * from './account.service';
 export * from './alert.service';
 export * from './department.service'; 
 export * from './employee.service';  
-
-
-================================================================================
-File: src\app\_services\request.model.js
-Size: 0 B
-================================================================================
-
 
 
 ================================================================================
@@ -4493,6 +4842,8 @@ export class RequestService {
   delete(id: number): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/${id}`);
   }
+
+ 
 }
 
 
@@ -4742,7 +5093,7 @@ Size: 1.18 kB
         "experimentalDecorators": true,
         "moduleResolution": "node",
         "importHelpers": true,
-        "target": "es2020",
+        "target": "ES2022",
         "module": "es2020",
         "lib": [
             "es2020",
@@ -4784,3 +5135,23 @@ Size: 397 B
         "src/**/*.d.ts"
     ]
 }
+
+================================================================================
+File: vercel.json
+Size: 253 B
+================================================================================
+
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist/angular-15-example" }
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
+

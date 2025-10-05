@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+﻿﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,7 +14,11 @@ export class AccountService {
   public account: Observable<Account | null>;
 
   constructor(private http: HttpClient) {
-    this.accountSubject = new BehaviorSubject<Account | null>(null);
+    // Check localStorage for saved account on initialization
+    const savedAccount = localStorage.getItem('currentAccount');
+    const initialAccount = savedAccount ? JSON.parse(savedAccount) : null;
+    
+    this.accountSubject = new BehaviorSubject<Account | null>(initialAccount);
     this.account = this.accountSubject.asObservable();
   }
 
@@ -26,6 +30,8 @@ export class AccountService {
   login(email: string, password: string) {
     return this.http.post<Account>(`${baseUrl}/authenticate`, { email, password })
       .pipe(map(account => {
+        // Save to localStorage
+        localStorage.setItem('currentAccount', JSON.stringify(account));
         this.accountSubject.next(account);
         return account;
       }));
@@ -33,6 +39,8 @@ export class AccountService {
 
   // ✅ logout
   logout() {
+    // Remove from localStorage
+    localStorage.removeItem('currentAccount');
     this.accountSubject.next(null);
   }
 
@@ -40,6 +48,8 @@ export class AccountService {
   refreshToken() {
     return this.http.post<Account>(`${baseUrl}/refresh-token`, {})
       .pipe(map(account => {
+        // Update localStorage with fresh token
+        localStorage.setItem('currentAccount', JSON.stringify(account));
         this.accountSubject.next(account);
         return account;
       }));
@@ -88,6 +98,7 @@ export class AccountService {
       .pipe(map(x => {
         if (id == this.accountValue?.id) {
           const updated = { ...this.accountValue, ...params };
+          localStorage.setItem('currentAccount', JSON.stringify(updated));
           this.accountSubject.next(updated as Account);
         }
         return x;

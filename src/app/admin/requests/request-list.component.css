@@ -17,6 +17,27 @@
   color: #007bff;
 }
 
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #ffc107; /* yellow */
+  color: #333;
+}
+.status-approved {
+  background-color: #28a745; /* green */
+  color: white;
+}
+.status-rejected {
+  background-color: #dc3545; /* red */
+  color: white;
+}
+
 /* --- Content Wrapper and Card --- */
 .content-wrapper {
   padding: 20px;

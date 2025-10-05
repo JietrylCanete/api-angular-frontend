@@ -1,7 +1,9 @@
 <div class="top-nav-bar">
   <span class="app-title"></span>
   <nav>
-    <a routerLink="/admin/accounts">Accounts</a>
+    <!-- Show Accounts link only for Admin -->
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" 
+       routerLink="/admin/accounts">Accounts</a>
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
@@ -35,10 +37,12 @@
             <td>{{ employee.Department?.departmentName }}</td>
             <td>{{ formatDate(employee.hireDate) }}</td>
             <td>
-              <span
-                class="status-badge"
-                [class.status-active]="employee.status === 'active'">
-                {{ employee.status }}
+              <span class="status-badge"
+                [ngClass]="{
+                  'status-active': employee.status!.toLowerCase() === 'active',
+                  'status-inactive': employee.status!.toLowerCase() === 'inactive'
+                }">
+                {{ employee.status | uppercase }}
               </span>
             </td>
             <td>

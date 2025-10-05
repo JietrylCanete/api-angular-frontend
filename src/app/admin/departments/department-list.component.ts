@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DepartmentService } from '@app/_services/department.service';
+import { AccountService } from '@app/_services/account.service';
 import { Department } from '@app/_models';
 
 @Component({
@@ -14,7 +15,8 @@ export class DepartmentListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private departmentService: DepartmentService
+    private departmentService: DepartmentService,
+    public accountService: AccountService
   ) {}
 
   ngOnInit(): void {

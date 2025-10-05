@@ -3,10 +3,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 
-import { AccountService, AlertService } from '@app/_services';
+import { AccountService } from '@app/_services';
 import { MustMatch } from '@app/_helpers';
 
-@Component({ templateUrl: 'add-edit.component.html' },)
+@Component({ templateUrl: 'add-edit.component.html' })
 export class AddEditComponent implements OnInit {
     form!: FormGroup;
     id?: string;
@@ -22,8 +22,7 @@ export class AddEditComponent implements OnInit {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
-        private accountService: AccountService,
-        private alertService: AlertService
+        private accountService: AccountService
     ) { }
 
     ngOnInit() {
@@ -35,7 +34,7 @@ export class AddEditComponent implements OnInit {
             lastName: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             role: ['', Validators.required],
-            status: ['active', Validators.required],   // 🔥 Added: status field (default active)
+            status: ['active', Validators.required],   // default active
             // password only required in add mode
             password: ['', [Validators.minLength(6), ...(!this.id ? [Validators.required] : [])]],
             confirmPassword: ['']
@@ -57,42 +56,37 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    // convenience getter for easy access to form fields
+    // convenience getter
     get f() { return this.form.controls; }
 
     onSubmit() {
         this.submitted = true;
 
-        // reset alerts on submit
-        this.alertService.clear();
-
-        // stop here if form is invalid
         if (this.form.invalid) {
             return;
         }
 
         this.submitting = true;
 
-        // create or update account based on id param
         let saveAccount;
         let message: string;
         if (this.id) {
             saveAccount = () => this.accountService.update(this.id!, this.form.value);
-            message = 'Account updated';
+            message = 'Account updated successfully!';
         } else {
             saveAccount = () => this.accountService.create(this.form.value);
-            message = 'Account created';
+            message = 'Account created successfully!';
         }
 
         saveAccount()
             .pipe(first())
             .subscribe({
                 next: () => {
-                    this.alertService.success(message, { keepAfterRouteChange: true });
+                    alert(message); // ✅ same as Employee/Department/Request
                     this.router.navigateByUrl('/admin/accounts');
                 },
                 error: error => {
-                    this.alertService.error(error);
+                    alert('Error: ' + (error.error?.message || 'Unknown error'));
                     this.submitting = false;
                 }
             });

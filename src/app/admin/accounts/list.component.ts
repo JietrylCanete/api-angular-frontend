@@ -1,17 +1,22 @@
-﻿import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+﻿﻿import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { first } from 'rxjs/operators';
 
 import { AccountService } from '@app/_services';
+import { Role } from '@app/_models';
 
 @Component({ 
     templateUrl: 'list.component.html', 
-    styleUrls: ['./list.component.css'], // <-- Corrected syntax for styleUrls
-    encapsulation: ViewEncapsulation.None // <-- ADDED to ensure header/background styles work
+    styleUrls: ['./list.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 export class ListComponent implements OnInit {
     accounts?: any[];
+    Role = Role;
 
-    constructor(private accountService: AccountService) { }
+    constructor(
+        private accountService: AccountService,
+        public accountServicePublic: AccountService
+    ) { }
 
     ngOnInit() {
         this.accountService.getAll()

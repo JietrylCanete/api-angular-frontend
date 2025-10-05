@@ -1,16 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { RequestService } from '@app/_services/request.service';
+import { AccountService } from '@app/_services/account.service';
 
 @Component({
   selector: 'app-request-list',
   templateUrl: './request-list.component.html',
-    styleUrls: ['./request-list.component.css']
+  styleUrls: ['./request-list.component.css']
 })  
 export class RequestListComponent implements OnInit {
   requests: any[] = [];
   loading = false;
 
-  constructor(private requestService: RequestService) {}
+  constructor(
+    private requestService: RequestService,
+    public accountService: AccountService
+  ) {}
 
   ngOnInit(): void {
     this.loadRequests();
