@@ -1,30 +1,4 @@
 
-{
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "ng serve",
-      "type": "pwa-chrome",
-      "request": "launch",
-      "preLaunchTask": "npm: start",
-      "url": "http://localhost:4200/"
-    },
-    {
-      "name": "ng test",
-      "type": "chrome",
-      "request": "launch",
-      "preLaunchTask": "npm: test",
-      "url": "http://localhost:9876/debug.html"
-    }
-  ]
-}
-
-
-================================================================================
-File: .vscode\tasks.json
-Size: 980 B
-================================================================================
 
 {
   // For more information, visit: https://go.microsoft.com/fwlink/?LinkId=733558
@@ -2618,14 +2592,14 @@ export class EmployeesModule {}
 
 ================================================================================
 File: src\app\admin\overview.component.html
-Size: 219 B
+Size: 160 B
 ================================================================================
 
 ﻿<div class="p-4">
     <div class="container">
-        <h1>Admin</h1>
-        <p>This section can only be accessed by administrators.</p>
-        <p><a routerLink="employees">Admin Zone</a></p>
+        <h1>Dashboard</h1>
+        
+        <p><a routerLink="employees">manage</a></p>
     </div>
 </div>
 
@@ -3259,7 +3233,7 @@ export class AppRoutingModule { }
 
 ================================================================================
 File: src\app\app.component.html
-Size: 944 B
+Size: 948 B
 ================================================================================
 
 ﻿﻿<div class="app-container" [ngClass]="{ 'bg-light': account }">
@@ -3270,7 +3244,7 @@ Size: 944 B
             <a routerLink="/profile" routerLinkActive="active" class="nav-item nav-link">Profile</a>
             
             <!-- FORCE SHOW ADMIN LINK - NO CONDITIONS -->
-            <a routerLink="/admin" class="nav-item nav-link">Admin</a>
+            <a routerLink="/admin" class="nav-item nav-link">Dashboard</a>
             
             <button (click)="logout()" class="btn btn-link nav-item nav-link">Logout</button>
         </div>
@@ -3288,10 +3262,10 @@ Size: 944 B
 
 ================================================================================
 File: src\app\app.component.ts
-Size: 654 B
+Size: 2.33 kB
 ================================================================================
 
-﻿import { Component } from '@angular/core';
+﻿﻿﻿import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AccountService } from './_services';
@@ -3301,7 +3275,7 @@ import { Account, Role } from './_models';
     selector: 'app-root', 
     templateUrl: 'app.component.html' 
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     Role = Role;
     account?: Account | null;
 
@@ -3309,10 +3283,49 @@ export class AppComponent {
         private accountService: AccountService,
         private router: Router
     ) {
-        this.accountService.account.subscribe(x => this.account = x);
+        console.log('AppComponent constructor - initializing...');
+        
+        this.accountService.account.subscribe(x => {
+            console.log('Account subscription update:', x);
+            this.account = x;
+        });
+    }
+
+    ngOnInit() {
+        console.log('AppComponent ngOnInit started');
+        console.log('Current URL:', window.location.href);
+        
+        // Check authentication state
+        const hasStoredSession = localStorage.getItem('currentAccount');
+        console.log('Has stored session:', hasStoredSession);
+        console.log('Current account value:', this.account);
+        
+        // If no valid account but we're on a protected route, redirect to login
+        if (!this.account && this.isProtectedRoute()) {
+            console.log('No valid session and on protected route - redirecting to login');
+            localStorage.removeItem('currentAccount'); // Clear any invalid session
+            this.router.navigate(['/account/login']);
+        } else if (!this.account) {
+            console.log('No valid session - allowing access to public routes');
+        }
+    }
+
+    private isProtectedRoute(): boolean {
+        const currentRoute = window.location.pathname;
+        console.log('Current route:', currentRoute);
+        
+        // Define which routes require authentication
+        const protectedRoutes = ['/', '/profile', '/admin'];
+        const isProtected = protectedRoutes.some(route => 
+            currentRoute === route || currentRoute.startsWith(route + '/')
+        );
+        
+        console.log('Is protected route:', isProtected);
+        return isProtected;
     }
 
     logout() {
+        console.log('Logging out...');
         this.accountService.logout();
         this.router.navigate(['/account/login']);
     }
@@ -4530,10 +4543,10 @@ export enum Role {
 
 ================================================================================
 File: src\app\_services\account.service.ts
-Size: 2.91 kB
+Size: 3.52 kB
 ================================================================================
 
-﻿import { Injectable } from '@angular/core';
+﻿﻿import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -4549,7 +4562,11 @@ export class AccountService {
   public account: Observable<Account | null>;
 
   constructor(private http: HttpClient) {
-    this.accountSubject = new BehaviorSubject<Account | null>(null);
+    // Check localStorage for saved account on initialization
+    const savedAccount = localStorage.getItem('currentAccount');
+    const initialAccount = savedAccount ? JSON.parse(savedAccount) : null;
+    
+    this.accountSubject = new BehaviorSubject<Account | null>(initialAccount);
     this.account = this.accountSubject.asObservable();
   }
 
@@ -4561,6 +4578,8 @@ export class AccountService {
   login(email: string, password: string) {
     return this.http.post<Account>(`${baseUrl}/authenticate`, { email, password })
       .pipe(map(account => {
+        // Save to localStorage
+        localStorage.setItem('currentAccount', JSON.stringify(account));
         this.accountSubject.next(account);
         return account;
       }));
@@ -4568,6 +4587,8 @@ export class AccountService {
 
   // ✅ logout
   logout() {
+    // Remove from localStorage
+    localStorage.removeItem('currentAccount');
     this.accountSubject.next(null);
   }
 
@@ -4575,6 +4596,8 @@ export class AccountService {
   refreshToken() {
     return this.http.post<Account>(`${baseUrl}/refresh-token`, {})
       .pipe(map(account => {
+        // Update localStorage with fresh token
+        localStorage.setItem('currentAccount', JSON.stringify(account));
         this.accountSubject.next(account);
         return account;
       }));
@@ -4623,6 +4646,7 @@ export class AccountService {
       .pipe(map(x => {
         if (id == this.accountValue?.id) {
           const updated = { ...this.accountValue, ...params };
+          localStorage.setItem('currentAccount', JSON.stringify(updated));
           this.accountSubject.next(updated as Account);
         }
         return x;
@@ -4639,7 +4663,6 @@ export class AccountService {
       }));
   }
 }
-
 
 ================================================================================
 File: src\app\_services\alert.service.ts
@@ -4797,12 +4820,13 @@ export * from './employee.service';
 
 ================================================================================
 File: src\app\_services\request.service.ts
-Size: 1.04 kB
+Size: 1.11 kB
 ================================================================================
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '@environments/environment.prod';
 
 export interface RequestItem {
   name: string;
@@ -4819,7 +4843,7 @@ export interface RequestModel {
   providedIn: 'root'
 })
 export class RequestService {
-  private baseUrl = 'http://localhost:4000/requests';
+  private baseUrl = `${environment.apiUrl}/requests`;
 
   constructor(private http: HttpClient) {}
 
@@ -4849,18 +4873,18 @@ export class RequestService {
 
 ================================================================================
 File: src\environments\environment.prod.ts
-Size: 94 B
+Size: 113 B
 ================================================================================
 
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:4000'
+    apiUrl: 'https://api-angular-backend.onrender.com'
 };
 
 
 ================================================================================
 File: src\environments\environment.ts
-Size: 718 B
+Size: 737 B
 ================================================================================
 
 // This file can be replaced during build by using the `fileReplacements` array.
@@ -4869,7 +4893,7 @@ Size: 718 B
 
 export const environment = {
     production: false,
-    apiUrl: 'http://localhost:4000'
+    apiUrl: 'https://api-angular-backend.onrender.com'
 };
 
 /*
