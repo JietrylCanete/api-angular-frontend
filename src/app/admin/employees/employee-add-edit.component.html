@@ -2,37 +2,77 @@
   <div class="card-header">
     <h5>{{ isAddMode ? 'Add Employee' : 'Edit Employee' }}</h5>
   </div>
+
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      
+      <!-- Account -->
       <div class="mb-3">
         <label>Account</label>
         <select formControlName="accountId" class="form-select">
+          <option value="">Select Account</option>
           <option *ngFor="let acc of accounts" [value]="acc.id">
             {{ acc.email }} ({{ acc.firstName }} {{ acc.lastName }})
           </option>
         </select>
+        <div *ngIf="f.accountId.touched && f.accountId.invalid" class="text-danger">
+          Account is required
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label>Position</label>
-        <input type="text" formControlName="position" class="form-control" />
-      </div>
-
+      <!-- Department -->
       <div class="mb-3">
         <label>Department</label>
         <select formControlName="departmentId" class="form-select">
+          <option value="">Select Department</option>
           <option *ngFor="let dept of departments" [value]="dept.id">
             {{ dept.departmentName }}
           </option>
         </select>
+        <div *ngIf="f.departmentId.touched && f.departmentId.invalid" class="text-danger">
+          Department is required
+        </div>
       </div>
 
+      <!-- Position -->
+      <div class="mb-3">
+        <label>Position</label>
+        <select formControlName="positionId" class="form-select">
+          <option value="">Select Position</option>
+          <option *ngFor="let pos of positions" [value]="pos.id">
+            {{ pos.name }} ({{ pos.status }})
+          </option>
+        </select>
+        <div *ngIf="f.positionId.touched && f.positionId.invalid" class="text-danger">
+          Position is required
+        </div>
+      </div>
+
+      <!-- Head (visible only for non-managers) -->
+      <ng-container *ngIf="!isManagerSelected()">
+        <div class="mb-3">
+          <label>Head (Manager)</label>
+          <select formControlName="headEmployeeId" class="form-select">
+            <option value="">Select Head</option>
+            <option *ngFor="let m of managers" [value]="m.EmployeeID">
+              {{ m.Account?.firstName }} {{ m.Account?.lastName }} — {{ m.EmployeeID }}
+            </option>
+          </select>
+          <div *ngIf="f.headEmployeeId.touched && f.headEmployeeId.invalid" class="text-danger">
+            Head is required for this position
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Hire Date -->
       <div class="mb-3">
         <label>Hire Date</label>
         <input type="date" formControlName="hireDate" class="form-control" />
+        <div *ngIf="f.hireDate.touched && f.hireDate.invalid" class="text-danger">
+          Hire Date is required
+        </div>
       </div>
 
+      <!-- Status -->
       <div class="mb-3">
         <label>Status</label>
         <select formControlName="status" class="form-select">
@@ -41,6 +81,7 @@
         </select>
       </div>
 
+      <!-- Buttons -->
       <div>
         <button [disabled]="loading" class="btn btn-primary me-2">
           {{ isAddMode ? 'Save' : 'Update' }}

@@ -1,11 +1,12 @@
+// src/app/_models/employee.ts
 export interface Employee {
-  EmployeeID: string; // backend uses EmployeeID, not id
-  position: string;
-  hireDate: string; // ISO string
-  status: string; // 'active' or 'inactive'
-
+  EmployeeID: string;
   accountId: number;
-  departmentId?: number;
+  departmentId?: number | null;
+  positionId?: number | null;
+  headEmployeeId?: string | null;
+  hireDate?: string | null;
+  status: string;
 
   Account?: {
     id: number;
@@ -17,6 +18,22 @@ export interface Employee {
   Department?: {
     id: number;
     departmentName: string;
-    employeeCounts?: number;
   };
+
+  Position?: {
+    id: number;
+    name: string;
+    status: string;
+  };
+
+  Head?: {
+    EmployeeID: string;
+    Account?: {
+      firstName?: string;
+      lastName?: string;
+    };
+  };
+
+  created?: string;
+  updated?: string;
 }

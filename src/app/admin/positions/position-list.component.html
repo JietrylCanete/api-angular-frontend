@@ -1,0 +1,56 @@
+<div class="top-nav-bar">
+  <span class="app-title"></span>
+  <nav>
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" routerLink="/admin/accounts">Accounts</a>
+    <a routerLink="/admin/employees">Employees</a>
+    <a routerLink="/admin/departments">Departments</a>
+    <a routerLink="/admin/requests">Requests</a>
+    <a routerLink="/admin/positions">Positions</a>
+  </nav>
+</div>
+
+<div class="content-wrapper">
+  <div class="card position-list-card">
+    <h2>POSITIONS</h2>
+
+    <div *ngIf="loading" class="text-center p-5">Loading positions...</div>
+
+    <div *ngIf="!loading">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let pos of positions">
+            <td>{{ pos.id }}</td>
+            <td>{{ pos.name }}</td>
+            <td>
+              <span
+                class="status-badge"
+                [ngClass]="{
+                  'status-active': pos.status?.toLowerCase() === 'active',
+                  'status-inactive': pos.status?.toLowerCase() === 'inactive'
+                }"
+              >
+                {{ pos.status | uppercase }}
+              </span>
+            </td>
+            <td>
+              <a [routerLink]="['/admin/positions/edit', pos.id]" class="btn btn-sm btn-success me-2">Edit</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="text-end mt-3">
+        <button routerLink="/admin/positions/add" class="btn btn-primary">Add Position</button>
+      </div>
+    </div>
+  </div>
+</div>

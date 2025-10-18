@@ -319,7 +319,7 @@ Size: 1.49 kB
   "vercel-build": "ng build --configuration production",
   "watch": "ng build --watch --configuration development",
   "test": "ng test",
-  "export:all": "folder2txt --output FrontEnd1.txt C:/Users/GSC-STUDENT/aProduction/api-angular-frontend"
+  "export:all": "folder2txt --output FrontEnd.txt C:/Users/MY PC/JAVA/deployed production/api-angular-frontend"
 },
 
     "private": true,
@@ -1395,7 +1395,7 @@ Size: 2.54 kB
 
 ================================================================================
 File: src\app\admin\accounts\list.component.html
-Size: 1.94 kB
+Size: 2 kB
 ================================================================================
 
 ﻿﻿<div class="app-header">
@@ -1405,6 +1405,8 @@ Size: 1.94 kB
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
+    <a routerLink="/admin/positions">Positions</a>
+
   </nav>
 </div>
 
@@ -1503,7 +1505,7 @@ export class ListComponent implements OnInit {
 
 ================================================================================
 File: src\app\admin\admin-routing.module.ts
-Size: 1.33 kB
+Size: 1.55 kB
 ================================================================================
 
 import { NgModule } from '@angular/core';
@@ -1540,6 +1542,12 @@ const routes: Routes = [
         loadChildren: () =>
           import('./requests/requests.module').then(m => m.RequestsModule),
         data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
+      },
+      {
+        path: 'positions',
+        loadChildren: () =>
+          import('./positions/positions.module').then(m => m.PositionsModule),
+        data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
       }
     ],
   },
@@ -1550,6 +1558,7 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AdminRoutingModule {}
+
 
 ================================================================================
 File: src\app\admin\admin.module.ts
@@ -1820,7 +1829,7 @@ tbody tr:hover {
 
 ================================================================================
 File: src\app\admin\departments\department-list.component.html
-Size: 1.68 kB
+Size: 1.74 kB
 ================================================================================
 
 <div class="top-nav-bar">
@@ -1832,6 +1841,8 @@ Size: 1.68 kB
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
+    <a routerLink="/admin/positions">Positions</a>
+
   </nav>
 </div>
 
@@ -1989,44 +2000,84 @@ export class DepartmentsModule {}
 
 ================================================================================
 File: src\app\admin\employees\employee-add-edit.component.html
-Size: 1.67 kB
+Size: 3.35 kB
 ================================================================================
 
 <div class="card mt-3">
   <div class="card-header">
     <h5>{{ isAddMode ? 'Add Employee' : 'Edit Employee' }}</h5>
   </div>
+
   <div class="card-body">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      
+      <!-- Account -->
       <div class="mb-3">
         <label>Account</label>
         <select formControlName="accountId" class="form-select">
+          <option value="">Select Account</option>
           <option *ngFor="let acc of accounts" [value]="acc.id">
             {{ acc.email }} ({{ acc.firstName }} {{ acc.lastName }})
           </option>
         </select>
+        <div *ngIf="f.accountId.touched && f.accountId.invalid" class="text-danger">
+          Account is required
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label>Position</label>
-        <input type="text" formControlName="position" class="form-control" />
-      </div>
-
+      <!-- Department -->
       <div class="mb-3">
         <label>Department</label>
         <select formControlName="departmentId" class="form-select">
+          <option value="">Select Department</option>
           <option *ngFor="let dept of departments" [value]="dept.id">
             {{ dept.departmentName }}
           </option>
         </select>
+        <div *ngIf="f.departmentId.touched && f.departmentId.invalid" class="text-danger">
+          Department is required
+        </div>
       </div>
 
+      <!-- Position -->
+      <div class="mb-3">
+        <label>Position</label>
+        <select formControlName="positionId" class="form-select">
+          <option value="">Select Position</option>
+          <option *ngFor="let pos of positions" [value]="pos.id">
+            {{ pos.name }}
+          </option>
+        </select>
+        <div *ngIf="f.positionId.touched && f.positionId.invalid" class="text-danger">
+          Position is required
+        </div>
+      </div>
+
+      <!-- Head (Manager) - show only if not manager -->
+      <ng-container *ngIf="!isSelectedManager()">
+        <div class="mb-3">
+          <label>Head (Manager)</label>
+          <select formControlName="headEmployeeId" class="form-select">
+            <option value="">Select Head</option>
+            <option *ngFor="let m of managers" [value]="m.EmployeeID">
+              {{ m.Account?.firstName }} {{ m.Account?.lastName }} — {{ m.EmployeeID }}
+            </option>
+          </select>
+          <div *ngIf="f.headEmployeeId.touched && f.headEmployeeId.invalid" class="text-danger">
+            Head is required for this position
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Hire Date -->
       <div class="mb-3">
         <label>Hire Date</label>
         <input type="date" formControlName="hireDate" class="form-control" />
+        <div *ngIf="f.hireDate.touched && f.hireDate.invalid" class="text-danger">
+          Hire Date is required
+        </div>
       </div>
 
+      <!-- Status -->
       <div class="mb-3">
         <label>Status</label>
         <select formControlName="status" class="form-select">
@@ -2035,6 +2086,7 @@ Size: 1.67 kB
         </select>
       </div>
 
+      <!-- Buttons -->
       <div>
         <button [disabled]="loading" class="btn btn-primary me-2">
           {{ isAddMode ? 'Save' : 'Update' }}
@@ -2048,7 +2100,7 @@ Size: 1.67 kB
 
 ================================================================================
 File: src\app\admin\employees\employee-add-edit.component.ts
-Size: 3.13 kB
+Size: 4.89 kB
 ================================================================================
 
 import { Component, OnInit } from '@angular/core';
@@ -2057,9 +2109,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EmployeeService } from '@app/_services/employee.service';
 import { AccountService } from '@app/_services/account.service';
 import { DepartmentService } from '@app/_services/department.service';
+import { PositionService } from '@app/_services/position.service';
 import { Employee } from '@app/_models/employee';
 import { Account } from '@app/_models';
 import { Department } from '@app/_models';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-employee-add-edit',
@@ -2074,6 +2128,8 @@ export class EmployeeAddEditComponent implements OnInit {
 
   accounts: Account[] = [];
   departments: Department[] = [];
+  positions: any[] = [];
+  managers: any[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -2081,7 +2137,8 @@ export class EmployeeAddEditComponent implements OnInit {
     private router: Router,
     private employeeService: EmployeeService,
     private accountService: AccountService,
-    private departmentService: DepartmentService
+    private departmentService: DepartmentService,
+    private positionService: PositionService
   ) {}
 
   ngOnInit(): void {
@@ -2091,34 +2148,69 @@ export class EmployeeAddEditComponent implements OnInit {
     this.form = this.formBuilder.group({
       accountId: ['', Validators.required],
       departmentId: ['', Validators.required],
-      position: ['', Validators.required],
+      positionId: [null, Validators.required],
+      headEmployeeId: [null],
       hireDate: ['', Validators.required],
-      status: ['active', Validators.required] 
+      status: ['active', Validators.required]
     });
 
-    this.accountService.getAll().subscribe(accounts => this.accounts = accounts);
-    this.departmentService.getAll().subscribe(departments => {
-      this.departments = departments;
+    // Load dropdown data
+    this.accountService.getAll().pipe(first()).subscribe(accounts => (this.accounts = accounts));
+    this.departmentService.getAll().pipe(first()).subscribe(departments => (this.departments = departments));
 
-      if (!this.isAddMode && this.EmployeeID) {
-        this.employeeService.getById(this.EmployeeID).subscribe(emp => {
+    this.positionService.getAll().pipe(first()).subscribe(pos => {
+      this.positions = pos;
+      // Load employees to filter managers
+      this.employeeService.getAll().pipe(first()).subscribe(all => {
+        this.managers = all.filter(
+          (e: any) => e.Position && e.Position.name && e.Position.name.toLowerCase() === 'manager'
+        );
+      });
+    });
+
+    // Watch for position changes
+    this.form.get('positionId')!.valueChanges.subscribe((posId: number) => {
+      const pos = this.positions.find(p => p.id === +posId);
+      const headControl = this.form.get('headEmployeeId')!;
+      if (pos && pos.name.toLowerCase() === 'manager') {
+        headControl.setValue(null);
+        headControl.clearValidators();
+        headControl.updateValueAndValidity();
+      } else {
+        headControl.setValidators([Validators.required]);
+        headControl.updateValueAndValidity();
+      }
+    });
+
+    // Edit mode: patch existing employee data
+    if (!this.isAddMode && this.EmployeeID) {
+      this.employeeService
+        .getById(this.EmployeeID)
+        .pipe(first())
+        .subscribe(emp => {
           this.form.patchValue({
-            accountId: emp.accountId,
-            departmentId: emp.departmentId,
-            position: emp.position,
-            hireDate: emp.hireDate,
+            accountId: emp.accountId ?? emp.Account?.id,
+            departmentId: emp.departmentId ?? emp.Department?.id,
+            positionId: emp.positionId ?? emp.Position?.id,
+            headEmployeeId: emp.headEmployeeId ?? emp.Head?.EmployeeID ?? null,
+            hireDate: emp.hireDate ? emp.hireDate.split('T')[0] : emp.hireDate,
             status: emp.status || 'active'
           });
         });
-      }
-    });
+    }
   }
 
-  get f() { return this.form.controls; }
+  get f() {
+    return this.form.controls;
+  }
 
   onSubmit(): void {
     this.submitted = true;
-    if (this.form.invalid) return alert('Please fill all required fields!');
+    if (this.form.invalid) {
+      alert('Please fill all required fields!');
+      return;
+    }
+
     this.loading = true;
 
     if (this.isAddMode) this.createEmployee();
@@ -2150,6 +2242,12 @@ export class EmployeeAddEditComponent implements OnInit {
       }
     });
   }
+  isSelectedManager(): boolean {
+  const posId = this.form.get('positionId')?.value;
+  const pos = this.positions.find((p: any) => p.id === +posId);
+  return pos && pos.name && pos.name.toLowerCase() === 'manager';
+}
+
 }
 
 
@@ -2303,7 +2401,7 @@ tbody tr:hover {
 
 ================================================================================
 File: src\app\admin\employees\employee-list.component.html
-Size: 3.3 kB
+Size: 3.37 kB
 ================================================================================
 
 <div class="top-nav-bar">
@@ -2315,6 +2413,8 @@ Size: 3.3 kB
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
+    <a routerLink="/admin/positions">Positions</a>
+
   </nav>
 </div>
 
@@ -2341,7 +2441,7 @@ Size: 3.3 kB
           <tr *ngFor="let employee of employees">
             <td>{{ employee.EmployeeID }}</td>
             <td>{{ employee.Account?.email }}</td>
-            <td>{{ employee.position }}</td>
+            <td>{{ employee.Position?.name || '—' }}</td>
             <td>{{ employee.Department?.departmentName }}</td>
             <td>{{ formatDate(employee.hireDate) }}</td>
             <td>
@@ -2679,6 +2779,414 @@ import { AccountService } from '@app/_services';
 export class OverviewComponent {
     constructor(public accountService: AccountService) { }
 }
+
+================================================================================
+File: src\app\admin\positions\position-add-edit.component.html
+Size: 854 B
+================================================================================
+
+<div class="card mt-3">
+  <div class="card-header">
+    <h5>{{ isAddMode ? 'Add Position' : 'Edit Position' }}</h5>
+  </div>
+
+  <div class="card-body">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label>Name</label>
+        <input type="text" class="form-control" formControlName="name" />
+      </div>
+
+      <div class="mb-3">
+        <label>Status</label>
+        <select class="form-select" formControlName="status">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary me-2" [disabled]="loading">
+        {{ isAddMode ? 'Save' : 'Update' }}
+      </button>
+      <a routerLink="/admin/positions" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+
+
+================================================================================
+File: src\app\admin\positions\position-add-edit.component.ts
+Size: 1.66 kB
+================================================================================
+
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PositionService } from '@app/_services/position.service';
+
+@Component({
+  templateUrl: './position-add-edit.component.html'
+})
+export class PositionAddEditComponent implements OnInit {
+  form!: FormGroup;
+  id?: number;
+  isAddMode = true;
+  loading = false;
+  submitted = false;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private positionService: PositionService
+  ) {}
+
+  ngOnInit(): void {
+    this.id = this.route.snapshot.params['id'];
+    this.isAddMode = !this.id;
+
+    this.form = this.formBuilder.group({
+      name: ['', Validators.required],
+      status: ['active', Validators.required]
+    });
+
+    if (!this.isAddMode) {
+      this.positionService.getById(this.id!).subscribe(pos => {
+        this.form.patchValue(pos);
+      });
+    }
+  }
+
+  get f() {
+    return this.form.controls;
+  }
+
+  onSubmit(): void {
+    this.submitted = true;
+    if (this.form.invalid) return;
+    this.loading = true;
+
+    if (this.isAddMode) {
+      this.positionService.create(this.form.value).subscribe({
+        next: () => this.router.navigate(['/admin/positions']),
+        error: err => (this.loading = false)
+      });
+    } else {
+      this.positionService.update(this.id!, this.form.value).subscribe({
+        next: () => this.router.navigate(['/admin/positions']),
+        error: err => (this.loading = false)
+      });
+    }
+  }
+}
+
+
+================================================================================
+File: src\app\admin\positions\position-list.component.css
+Size: 3.2 kB
+================================================================================
+
+/* --- Global Page and Header Layout --- */
+.app-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+}
+.app-header nav a {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #555;
+  font-size: 0.9rem;
+}
+.app-header nav a:hover {
+  color: #007bff;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-pending {
+  background-color: #ffc107; /* yellow */
+  color: #333;
+}
+.status-approved {
+  background-color: #28a745; /* green */
+  color: white;
+}
+.status-rejected {
+  background-color: #dc3545; /* red */
+  color: white;
+}
+
+/* --- Content Wrapper and Card --- */
+.content-wrapper {
+  padding: 20px;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+.list-container {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.list-container h2 {
+  margin-top: 0;
+  padding-bottom: 5px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+}
+
+/* --- Table Structure --- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+.data-table thead {
+  border-bottom: 1px solid #e0e0e0;
+}
+.data-table th, .data-table td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+.data-table th {
+  font-weight: 600;
+  color: #555;
+}
+.data-table tbody tr {
+    transition: background-color 0.1s ease;
+}
+.data-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* --- Status Badge Styling --- */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.status-active {
+  background-color: #28a745; /* Green for ACTIVE */
+  color: white;
+}
+.status-inactive {
+  background-color: #6c757d; /* Gray for INACTIVE/DISABLED */
+  color: white;
+}
+
+/* --- Action Buttons Styling (Edit/Delete) --- */
+.action-cell {
+  white-space: nowrap;
+}
+.action-btn {
+  margin-right: 5px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.action-btn:last-child {
+  margin-right: 0;
+}
+
+.btn-edit { background-color: #007bff; }
+
+/* --- Add Account Button --- */
+.add-button-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+}
+.add-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.add-button:hover {
+  background-color: #0056b3;
+}
+/* --- Status Badge Styling --- */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.status-active {
+  background-color: #28a745; /* Green - FOR ACTIVE */
+  color: white;
+}
+.status-inactive {
+  background-color: #dc3545; /* Red - FOR INACTIVE */
+  color: white;
+}
+
+================================================================================
+File: src\app\admin\positions\position-list.component.html
+Size: 1.65 kB
+================================================================================
+
+<div class="top-nav-bar">
+  <span class="app-title"></span>
+  <nav>
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" 
+       routerLink="/admin/accounts">Accounts</a>
+    <a routerLink="/admin/employees">Employees</a>
+    <a routerLink="/admin/departments">Departments</a>
+    <a routerLink="/admin/requests">Requests</a>
+    <a routerLink="/admin/positions" class="active">Positions</a>
+  </nav>
+</div>
+
+<div class="content-wrapper">
+  <div class="card mt-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Positions</h5>
+      <a routerLink="/admin/positions/add" class="btn btn-primary btn-sm">+ Add Position</a>
+    </div>
+
+    <div class="card-body">
+      <table class="table table-bordered table-striped" *ngIf="positions.length > 0; else noData">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pos of positions">
+            <td>{{ pos.id }}</td>
+            <td>{{ pos.name }}</td>
+            <td>{{ pos.status }}</td>
+            <td>
+              <a [routerLink]="['/admin/positions/edit', pos.id]" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+              <!-- <button class="btn btn-sm btn-outline-danger" (click)="delete(pos.id)">Delete</button> -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noData>
+        <p class="text-muted">No positions found.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+
+================================================================================
+File: src\app\admin\positions\position-list.component.ts
+Size: 1.09 kB
+================================================================================
+
+import { Component, OnInit } from '@angular/core';
+import { PositionService } from '@app/_services/position.service';
+import { Router } from '@angular/router';
+import { AccountService } from '@app/_services/account.service';
+
+@Component({
+  templateUrl: './position-list.component.html',
+  styleUrls: ['./position-list.component.css']
+})
+export class PositionListComponent implements OnInit {
+  positions: any[] = [];
+  loading = false;
+
+  constructor(private positionService: PositionService, private router: Router,public accountService: AccountService  ) {}
+
+  ngOnInit(): void {
+    this.loadPositions();
+  }       
+
+  loadPositions(): void {
+    this.loading = true;
+    this.positionService.getAll().subscribe({
+      next: data => {
+        this.positions = data;
+        this.loading = false;
+      },
+      error: () => (this.loading = false)
+    });
+  }
+
+  delete(id: number): void {
+    if (confirm('Are you sure you want to delete this position?')) {
+      this.positionService.delete(id).subscribe(() => this.loadPositions());
+    }
+  }
+}
+
+
+================================================================================
+File: src\app\admin\positions\positions-routing.module.ts
+Size: 575 B
+================================================================================
+
+import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { PositionListComponent } from './position-list.component';
+import { PositionAddEditComponent } from './position-add-edit.component';
+
+const routes: Routes = [
+  { path: '', component: PositionListComponent },
+  { path: 'add', component: PositionAddEditComponent },
+  { path: 'edit/:id', component: PositionAddEditComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class PositionsRoutingModule {}
+
+
+================================================================================
+File: src\app\admin\positions\positions.module.ts
+Size: 554 B
+================================================================================
+
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { PositionsRoutingModule } from './positions-routing.module';
+
+import { PositionListComponent } from './position-list.component';
+import { PositionAddEditComponent } from './position-add-edit.component';
+
+@NgModule({
+  declarations: [PositionListComponent, PositionAddEditComponent],
+  imports: [CommonModule, ReactiveFormsModule, PositionsRoutingModule]
+})
+export class PositionsModule {}
+
 
 ================================================================================
 File: src\app\admin\requests\request-add-edit.component.html
@@ -3096,7 +3604,7 @@ Size: 3.2 kB
 
 ================================================================================
 File: src\app\admin\requests\request-list.component.html
-Size: 2.07 kB
+Size: 2.13 kB
 ================================================================================
 
 <div class="app-header">
@@ -3106,6 +3614,7 @@ Size: 2.07 kB
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
+     <a routerLink="/admin/positions">Positions</a>
   </nav>
 </div>
 
@@ -3146,7 +3655,7 @@ Size: 2.07 kB
           <td>{{ req.created | date:'M/d/yyyy, h:mm a' }}</td>
           <td class="action-cell">
             <a [routerLink]="['/admin/requests/edit', req.requestId]" class="btn action-btn btn-edit">Edit</a>
-            <button class="btn action-btn btn-delete" (click)="deleteRequest(req.requestId)">Delete</button>
+            <!-- <button class="btn action-btn btn-delete" (click)="deleteRequest(req.requestId)">Delete</button> -->
           </td>
         </tr>
         <tr *ngIf="requests.length === 0">
@@ -3583,7 +4092,7 @@ export class ProfileModule { }
 
 ================================================================================
 File: src\app\profile\update.component.html
-Size: 3.94 kB
+Size: 3.95 kB
 ================================================================================
 
 ﻿<h1>Update Profile</h1>
@@ -3650,10 +4159,10 @@ Size: 3.94 kB
             <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1"></span>
             Update
         </button>
-        <button type="button" (click)="onDelete()" [disabled]="deleting" class="btn btn-danger">
+        <!-- <button type="button" (click)="onDelete()" [disabled]="deleting" class="btn btn-danger">
             <span *ngIf="deleting" class="spinner-border spinner-border-sm me-1"></span>
             Delete
-        </button>
+        </button> -->
         <a routerLink="../" href="" class="btn btn-link">Cancel</a>
     </div>
 </form>
@@ -4530,18 +5039,21 @@ export interface Department {
 
 ================================================================================
 File: src\app\_models\employee.ts
-Size: 452 B
+Size: 869 B
 ================================================================================
 
+// src/app/_models/employee.ts
+
 export interface Employee {
-  EmployeeID: string; // backend uses EmployeeID, not id
-  position: string;
-  hireDate: string; // ISO string
-  status: string; // 'active' or 'inactive'
-
+  EmployeeID: string; // backend uses EmployeeID as PK
   accountId: number;
-  departmentId?: number;
+  departmentId: number | null;
+  positionId?: number | null;      // ✅ new: foreign key to Position table
+  headEmployeeId?: string | null;  // ✅ new: EmployeeID of manager
+  hireDate: string;
+  status: string;
 
+  // ✅ new: expanded relations
   Account?: {
     id: number;
     email: string;
@@ -4552,8 +5064,26 @@ export interface Employee {
   Department?: {
     id: number;
     departmentName: string;
-    employeeCounts?: number;
   };
+
+  Position?: {
+    id: number;
+    name: string;
+    status: string;
+  };
+
+  Head?: {
+    EmployeeID: string;
+    Account?: {
+      id: number;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+    };
+  };
+
+  created?: string;
+  updated?: string;
 }
 
 
@@ -4872,14 +5402,53 @@ export class EmployeeService {
 
 ================================================================================
 File: src\app\_services\index.ts
-Size: 183 B
+Size: 220 B
 ================================================================================
 
 ﻿// src/app/_services/index.ts
 export * from './account.service';
 export * from './alert.service';
 export * from './department.service'; 
-export * from './employee.service';  
+export * from './employee.service';
+export * from './position.service';
+
+
+
+================================================================================
+File: src\app\_services\position.service.ts
+Size: 761 B
+================================================================================
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class PositionService {
+  private baseUrl = `${environment.apiUrl}/positions`;
+
+  constructor(private http: HttpClient) {}
+
+  getAll() {
+    return this.http.get<any[]>(this.baseUrl);
+  }
+
+  getById(id: number) {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  }
+
+  create(params: any) {
+    return this.http.post(this.baseUrl, params);
+  }
+
+  update(id: number, params: any) {
+    return this.http.put(`${this.baseUrl}/${id}`, params);
+  }
+
+  delete(id: number) {
+    return this.http.delete(`${this.baseUrl}/${id}`);
+  }
+}
 
 
 ================================================================================

@@ -1,0 +1,34 @@
+<!-- src/app/admin/positions/position-add-edit.component.html -->
+<div class="top-nav-bar">
+  <span class="app-title"></span>
+</div>
+
+<div class="content-wrapper">
+  <div class="card mt-3">
+    <div class="card-header">
+      <h5>{{ isAddMode ? 'Add Position' : 'Edit Position' }}</h5>
+    </div>
+
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label>Name</label>
+          <input type="text" class="form-control" formControlName="name" />
+        </div>
+
+        <div class="mb-3">
+          <label>Status</label>
+          <select class="form-select" formControlName="status">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary me-2" [disabled]="loading">
+          {{ isAddMode ? 'Save' : 'Update' }}
+        </button>
+        <a routerLink="/admin/positions" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>

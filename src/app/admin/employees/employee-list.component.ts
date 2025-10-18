@@ -48,13 +48,14 @@ export class EmployeeListComponent implements OnInit {
 
   loadDepartments(): void {
     this.departmentService.getAll().subscribe({
-      next: (data: Department[]) => this.departments = data,
+      next: (data: Department[]) => (this.departments = data),
       error: (err: any) => console.error('Failed to load departments', err)
     });
   }
 
-  formatDate(isoString: string): string {
-    return isoString ? new Date(isoString).toLocaleDateString('en-US') : '';
+  // ✅ FIX: make date parameter null-safe
+  formatDate(isoString?: string | null): string {
+    return isoString ? new Date(isoString).toLocaleDateString('en-US') : '—';
   }
 
   viewRequests(emp: Employee) {
@@ -95,15 +96,13 @@ export class EmployeeListComponent implements OnInit {
   transferEmployee() {
     if (!this.selectedEmployee || this.newDepartmentId === null) return;
 
-    this.employeeService
-      .transfer(this.selectedEmployee.EmployeeID, this.newDepartmentId)
-      .subscribe({
-        next: () => {
-          alert('Employee transferred successfully!');
-          this.closeModal();
-          this.loadEmployees();
-        },
-        error: err => console.error('Transfer failed', err)
-      });
+    this.employeeService.transfer(this.selectedEmployee.EmployeeID, this.newDepartmentId).subscribe({
+      next: () => {
+        alert('Employee transferred successfully!');
+        this.closeModal();
+        this.loadEmployees();
+      },
+      error: (err) => console.error('Transfer failed', err)
+    });
   }
 }

@@ -1,12 +1,11 @@
 <div class="top-nav-bar">
   <span class="app-title"></span>
   <nav>
-    <!-- Show Accounts link only for Admin -->
-    <a *ngIf="accountService.accountValue?.role === 'Admin'" 
-       routerLink="/admin/accounts">Accounts</a>
+    <a *ngIf="accountService.accountValue?.role === 'Admin'" routerLink="/admin/accounts">Accounts</a>
     <a routerLink="/admin/employees">Employees</a>
     <a routerLink="/admin/departments">Departments</a>
     <a routerLink="/admin/requests">Requests</a>
+    <a routerLink="/admin/positions">Positions</a>
   </nav>
 </div>
 
@@ -24,24 +23,38 @@
             <th>Account</th>
             <th>Position</th>
             <th>Department</th>
+            <th>Head</th>
             <th>Hire Date</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
+
         <tbody>
           <tr *ngFor="let employee of employees">
             <td>{{ employee.EmployeeID }}</td>
             <td>{{ employee.Account?.email }}</td>
-            <td>{{ employee.position }}</td>
+            <td>{{ employee.Position?.name || '—' }}</td>
             <td>{{ employee.Department?.departmentName }}</td>
+
+            <!-- ✅ Fixed Head column (using safe navigation operators) -->
+            <td>
+              {{
+                employee.Head?.Account
+                  ? (employee.Head?.Account?.firstName || '') + ' ' + (employee.Head?.Account?.lastName || '')
+                  : '—'
+              }}
+            </td>
+
             <td>{{ formatDate(employee.hireDate) }}</td>
             <td>
-              <span class="status-badge"
+              <span
+                class="status-badge"
                 [ngClass]="{
                   'status-active': employee.status!.toLowerCase() === 'active',
                   'status-inactive': employee.status!.toLowerCase() === 'inactive'
-                }">
+                }"
+              >
                 {{ employee.status | uppercase }}
               </span>
             </td>

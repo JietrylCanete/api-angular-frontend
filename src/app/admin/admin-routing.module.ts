@@ -32,6 +32,12 @@ const routes: Routes = [
         loadChildren: () =>
           import('./requests/requests.module').then(m => m.RequestsModule),
         data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
+      },
+      {
+        path: 'positions',
+        loadChildren: () =>
+          import('./positions/positions.module').then(m => m.PositionsModule),
+        data: { roles: [Role.Admin, Role.User] } // BOTH ROLES
       }
     ],
   },
