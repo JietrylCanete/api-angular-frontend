@@ -1,152 +1,121 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RequestService } from '@app/_services/request.service';
-import { EmployeeService } from '@app/_services/employee.service';
-import { Request } from '@app/_models/request';
-
-interface Employee {
-  EmployeeID: string;
-  Account?: { id: number; email: string };
-}
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-request-add-edit',
-  templateUrl: './request-add-edit.component.html'
+  templateUrl: './request-add-edit.component.html',
 })
 export class RequestAddEditComponent implements OnInit {
   form!: FormGroup;
-  isAddMode = true;
+  id?: number;
+  title!: string;
   loading = false;
   submitted = false;
-  employees: Employee[] = [];
-  id!: number;
-
-  // ✅ store email separately for readonly display
-  employeeEmail: string = '';
+  isAddMode = true;
+  currentStatus: string = 'draft';
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private requestService: RequestService,
-    private employeeService: EmployeeService
+    private requestService: RequestService
   ) {}
 
   ngOnInit(): void {
-    this.id = +this.route.snapshot.params['id'];
+    this.id = this.route.snapshot.params['id'];
     this.isAddMode = !this.id;
+    this.title = this.isAddMode ? 'Add Request' : 'Edit Request';
 
-    this.form = this.fb.group({
-      employeeId: ['', Validators.required],
+    this.form = this.formBuilder.group({
       type: ['', Validators.required],
-      items: this.fb.array([], Validators.required),
-      status: [this.isAddMode ? 'pending' : '', Validators.required]
+      items: ['', Validators.required],
+      quantity: [1, [Validators.required, Validators.min(1)]],
+      status: ['draft']
     });
 
-    this.employeeService.getAll().subscribe({
-      next: (res: Employee[]) => {
-        this.employees = res;
+    if (!this.isAddMode) {
+      this.loading = true;
+      this.requestService
+        .getById(this.id!)
+        .pipe(first())
+        .subscribe({
+          next: (r: any) => {
+            this.form.patchValue(r);
+            this.currentStatus = r.status?.toLowerCase() || 'draft';
+            this.loading = false;
 
-        if (this.isAddMode) {
-          this.addItem();
-        } else {
-          this.loadRequest();
-        }
-      },
-      error: err => console.error('Error loading employees', err)
-    });
-  }
-
-  get itemsFormArray(): FormArray {
-    return this.form.get('items') as FormArray;
-  }
-
-  addItem(name: string = '', quantity: number = 1): void {
-    this.itemsFormArray.push(
-      this.fb.group({
-        name: [name, Validators.required],
-        quantity: [quantity, [Validators.required, Validators.min(1)]]
-      })
-    );
-  }
-
-  removeItem(index: number): void {
-    if (this.itemsFormArray.length > 1) {
-      this.itemsFormArray.removeAt(index);
+            // 🔒 Disable form if not draft
+            if (this.currentStatus !== 'draft') {
+              this.form.disable();
+            }
+          },
+          error: (error: any) => {
+            console.error('Error loading request:', error);
+            this.loading = false;
+          }
+        });
     }
   }
 
-  loadRequest(): void {
-    this.requestService.getById(this.id).subscribe((req: any) => {
-      console.log('Loaded request:', req);
-
-      this.form.patchValue({
-        employeeId: req.accountId,
-        type: req.type,
-        status: req.status
-      });
-
-      // ✅ capture the Account email for readonly display
-      this.employeeEmail = req.Account?.email || '';
-
-      this.itemsFormArray.clear();
-      if (req.items) {
-        const itemNames =
-          typeof req.items === 'string'
-            ? req.items.split(',').map((n: string) => n.trim())
-            : [];
-        if (itemNames.length > 0) {
-          itemNames.forEach((name: string) => {
-            this.addItem(name, req.quantity || 1);
-          });
-        } else {
-          this.addItem();
-        }
-      } else {
-        this.addItem();
-      }
-    });
+  get f() {
+    return this.form.controls;
   }
 
-  onSubmit(): void {
+  onSubmit(forApproval = false): void {
     this.submitted = true;
-    if (this.form.invalid) {
-      alert('Please fill all required fields!');
+    if (this.form.invalid) return;
+
+    // 🚫 Prevent saving if not draft
+    if (!this.isAddMode && this.currentStatus !== 'draft') {
+      alert('You can only edit or submit requests in Draft status.');
       return;
     }
 
     this.loading = true;
+    const formValue = { ...this.form.value };
+    if (forApproval) formValue.status = 'pending';
 
-    const itemsArray = this.itemsFormArray.value;
-    const itemsString = itemsArray.map((i: any) => i.name).join(', ');
-    const totalQuantity = itemsArray.reduce(
-      (sum: number, i: any) => sum + Number(i.quantity),
-      0
-    );
+    if (this.isAddMode) {
+      this.requestService
+        .add(formValue)
+        .pipe(first())
+        .subscribe({
+          next: () => {
+            alert(forApproval ? 'Request submitted for approval.' : 'Request created successfully.');
+            this.router.navigate(['/admin/requests']);
+          },
+          error: (error: any) => {
+            console.error('Error creating request:', error);
+            alert('Failed to create request.');
+            this.loading = false;
+          }
+        });
+    } else {
+      this.requestService
+        .update(this.id!, formValue)
+        .pipe(first())
+        .subscribe({
+          next: () => {
+            alert(forApproval ? 'Request submitted for approval.' : 'Request updated successfully.');
+            this.router.navigate(['/admin/requests']);
+          },
+          error: (error: any) => {
+            console.error('Error updating request:', error);
+            alert('Failed to update request.');
+            this.loading = false;
+          }
+        });
+    }
+  }
 
-    const payload = {
-      accountId: this.form.value.employeeId,
-      type: this.form.value.type,
-      items: itemsString,
-      quantity: totalQuantity,
-      status: this.form.value.status
-    };
+  onCancel(): void {
+    this.router.navigate(['/admin/requests']);
+  }
 
-    const requestObservable = this.isAddMode
-      ? this.requestService.create(payload)
-      : this.requestService.update(this.id, payload);
-
-    requestObservable.subscribe({
-      next: () => {
-        alert(this.isAddMode ? 'Request created successfully!' : 'Request updated successfully!');
-        this.router.navigate(['/admin/requests']);
-      },
-      error: err => {
-        console.error('Error:', err);
-        alert('Error: ' + (err.error?.message || 'Unknown error'));
-        this.loading = false;
-      }
-    });
+  onBack(): void {
+    this.router.navigate(['/admin/requests']);
   }
 }
