@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RequestService } from '@app/_services/request.service';
+import { AccountService } from '@app/_services/account.service';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -15,13 +16,14 @@ export class RequestAddEditComponent implements OnInit {
   loading = false;
   submitted = false;
   isAddMode = true;
-  currentStatus: string = 'draft';
+  currentStatus: string = 'draft'; // ✅ Added
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private accountService: AccountService
   ) {}
 
   ngOnInit(): void {
@@ -44,10 +46,10 @@ export class RequestAddEditComponent implements OnInit {
         .subscribe({
           next: (r: any) => {
             this.form.patchValue(r);
-            this.currentStatus = r.status?.toLowerCase() || 'draft';
+            this.currentStatus = r.status || 'draft'; // ✅ Track current status
             this.loading = false;
 
-            // 🔒 Disable form if not draft
+            // ✅ Disable form if status is not 'draft'
             if (this.currentStatus !== 'draft') {
               this.form.disable();
             }
@@ -68,14 +70,11 @@ export class RequestAddEditComponent implements OnInit {
     this.submitted = true;
     if (this.form.invalid) return;
 
-    // 🚫 Prevent saving if not draft
-    if (!this.isAddMode && this.currentStatus !== 'draft') {
-      alert('You can only edit or submit requests in Draft status.');
-      return;
-    }
-
     this.loading = true;
-    const formValue = { ...this.form.value };
+
+    const account = this.accountService.accountValue;
+    const formValue = { ...this.form.value, accountId: account?.id };
+
     if (forApproval) formValue.status = 'pending';
 
     if (this.isAddMode) {
@@ -111,11 +110,12 @@ export class RequestAddEditComponent implements OnInit {
     }
   }
 
-  onCancel(): void {
+  // ✅ Added: back button logic
+  onBack(): void {
     this.router.navigate(['/admin/requests']);
   }
 
-  onBack(): void {
+  onCancel(): void {
     this.router.navigate(['/admin/requests']);
   }
 }
